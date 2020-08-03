@@ -1,0 +1,20 @@
+name: SA
+version: 2.0
+author: Kilobytes
+main:  io.github.kilobytz.sa.SA
+description: Commands for SA dungeon server.
+commands:
+  heal:
+    description: Heals the user to full health.
+  spawn:
+    description: Returns the user to the spawn.
+  ded:
+    description: Kills the user.
+  warp:
+    description: Warps the user to the designated warp.
+  setwarp:
+    description: Sets the user's position to the designated warp name.
+  delwarp:
+    description: Deletes the designated warp.
+  spawnboss:
+  boom:
