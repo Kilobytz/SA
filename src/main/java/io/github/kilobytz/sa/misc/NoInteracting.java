@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 
 public class NoInteracting implements Listener {
+
     @EventHandler
     public void onHangingHit(HangingBreakByEntityEvent event) {
             if(event.getRemover() instanceof Player) {
@@ -20,9 +21,5 @@ public class NoInteracting implements Listener {
                 }
             }
             event.setCancelled(true);
-    }
-    @EventHandler
-    public void interacting() {
-
     }
 }
