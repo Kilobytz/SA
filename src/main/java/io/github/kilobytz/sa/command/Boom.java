@@ -22,7 +22,7 @@ public class Boom implements TabExecutor {
         if (command.getName().equalsIgnoreCase("boom")) {
             int length = args.length;
             if(length == 0) {
-                sender.sendMessage(String.format("%sError. Invalid.", ChatColor.RED));
+                sender.sendMessage(ChatColor.RED + "Error. Invalid.");
                 return true;
             }
             if(length == 1) {
@@ -47,6 +47,8 @@ public class Boom implements TabExecutor {
                             return true;
                         }
                     }
+                    sender.sendMessage(String.format("%sI'm sorry, but you do not have permission to perform this command. Please contact the server administrator if you believe that this is in error.", ChatColor.RED));
+                    return true;
                 }
             }
             if(length == 4) {

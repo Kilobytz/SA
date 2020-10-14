@@ -25,7 +25,6 @@ public class Warp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("warp")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
-                if (playerSent.isOp()) {
                     int length = args.length;
                     if (length == 0) {
                         List<String> allWarps = warpHandling.getAllWarps();
@@ -55,9 +54,6 @@ public class Warp implements TabExecutor {
                     }
                     playerSent.sendMessage(String.format("%sError. Invalid character.",ChatColor.RED));
                     return true;
-                }
-                playerSent.sendMessage(String.format("%sI'm sorry, but you do not have permission to perform this command. Please contact the server administrator if you believe that this is in error.", ChatColor.RED));
-                return true;
             }
             sender.sendMessage("Error. You are not a player.");
             return true;

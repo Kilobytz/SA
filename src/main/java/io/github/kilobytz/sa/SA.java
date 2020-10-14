@@ -1,20 +1,33 @@
 package io.github.kilobytz.sa;
 
+
 import io.github.kilobytz.sa.command.*;
 import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.entities.ShulkerBoss;
 import io.github.kilobytz.sa.commandfunctions.CollisionManager;
 import io.github.kilobytz.sa.commandfunctions.WarpHandling;
 import io.github.kilobytz.sa.misc.NoInteracting;
+import io.github.kilobytz.sa.ranks.RankListener;
+import io.github.kilobytz.sa.ranks.RankManager;
+import io.github.kilobytz.sa.tips.TipManager;
 import net.minecraft.server.v1_12_R1.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class SA extends JavaPlugin {
+
 
     WarpHandling wH = new WarpHandling(this);
     CollisionManager cM = new CollisionManager();
@@ -28,6 +41,11 @@ public class SA extends JavaPlugin {
     Heal heal = new Heal();
     SpawnShulkerBoss sBoss = new SpawnShulkerBoss();
     Boom boom = new Boom();
+    TipManager tM = new TipManager(this);
+    Tip tip = new Tip();
+    Rank rank = new Rank();
+    RankListener rL = new RankListener();
+    RankManager rM = new RankManager(this);
 
     @Override
     public void onEnable() {
@@ -36,6 +54,8 @@ public class SA extends JavaPlugin {
         registerCommands();
         classSetups();
         CustomEntities.registerEntities();
+        startTips();
+        setPermMessages();
     }
 
     @Override
@@ -52,8 +72,21 @@ public class SA extends JavaPlugin {
         this.getCommand("heal").setExecutor(this.heal);
         this.getCommand("spawnboss").setExecutor(this.sBoss);
         this.getCommand("boom").setExecutor(this.boom);
+        this.getCommand("tip").setExecutor(this.tip);
+        this.getCommand("rank").setExecutor(this.rank);
+    }
 
-
+    public void setPermMessages() {
+        String ob = ChatColor.RED + "I'm sorry, but you do not have permission to perform this command. Please contact the server administrator if you believe that this is in error.";
+        this.getCommand("warp").setPermissionMessage(ob);
+        this.getCommand("setwarp").setPermissionMessage(ob);
+        this.getCommand("delwarp").setPermissionMessage(ob);
+        this.getCommand("ded").setPermissionMessage(ob);
+        this.getCommand("spawn").setPermissionMessage(ob);
+        this.getCommand("heal").setPermissionMessage(ob);
+        this.getCommand("spawnboss").setPermissionMessage(ob);
+        this.getCommand("boom").setPermissionMessage(ob);
+        this.getCommand("tip").setPermissionMessage(ob);
     }
 
     public void registerListeners() {
@@ -61,6 +94,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.cM, this);
         pluginManager.registerEvents(this.eM, this);
         pluginManager.registerEvents(this.pNH, this);
+        pluginManager.registerEvents(this.rL, this);
     }
 
     public void classSetups() {
@@ -68,7 +102,23 @@ public class SA extends JavaPlugin {
         warp.setup(wH);
         setWarp.setup(wH);
         delWarp.setup(wH);
+        tip.setTipData(tM);
+        rL.setRanks(rM,this);
+        rank.setRankData(rM);
+    }
 
+    public void startTips() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+
+            @Override
+            public void run() {
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    if(tM.numOfTips() != 0) {
+                        p.sendMessage(ChatColor.DARK_PURPLE + "TIP: " + tM.getTip());
+                    }
+                }
+            }
+        },50L, 3000);
     }
 
     public enum CustomEntities {

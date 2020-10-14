@@ -25,7 +25,6 @@ public class SetWarp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("setwarp")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
-                if (playerSent.isOp()) {
                     int length = args.length;
                     if (length == 0) {
                         playerSent.sendMessage(String.format("%sError, field is blank.", ChatColor.RED));
@@ -38,9 +37,6 @@ public class SetWarp implements TabExecutor {
                     }
                     playerSent.sendMessage(String.format("%sError, invalid character.", ChatColor.RED));
                     return true;
-                }
-                playerSent.sendMessage(String.format("%sI'm sorry, but you do not have permission to perform this command. Please contact the server administrator if you believe that this is in error.", ChatColor.RED));
-                return true;
             }
             sender.sendMessage("Error. You are not a player.");
             return true;

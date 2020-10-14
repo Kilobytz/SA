@@ -59,7 +59,6 @@ public class DelWarp implements TabExecutor {
             if (args.length == 1) {
                 ArrayList<String> fill = new ArrayList<>();
                 List<String> warps = warpHandling.getAllWarps();
-                if (sender.isOp()) {
                     if (!args[0].equals("")) {
                         for (String entry : warps) {
                             String tempEntry = entry;
@@ -73,8 +72,6 @@ public class DelWarp implements TabExecutor {
                         }
                     }
                     return fill;
-                }
-                return fill;
             }
         }
         return null;
