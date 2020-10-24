@@ -136,6 +136,21 @@ public class Rank implements TabExecutor {
                 }
                 return rankCom;
             }
+            if(args.length == 3) {
+                ArrayList<String> ranks = new ArrayList<>();
+                if (!args[2].equals("")) {
+                    for (String entry : rM.getRanks()) {
+                        if (entry.toLowerCase().startsWith(args[2].toLowerCase())) {
+                            ranks.add(entry.toLowerCase());
+                        }
+                    }
+                } else {
+                    for (String entry : rM.getRanks()) {
+                        ranks.add(entry.toLowerCase());
+                    }
+                }
+                return ranks;
+            }
         }
         return null;
     }

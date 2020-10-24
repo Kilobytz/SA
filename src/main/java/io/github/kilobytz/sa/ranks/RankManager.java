@@ -44,6 +44,9 @@ public class RankManager {
                     player.removeAttachment(pai.getAttachment());
                 }
             }
+            resetName(player);
+            main.getConfig().set("users." + player.getUniqueId().toString(), null);
+            main.saveConfig();
             player.addAttachment(main, "minecraft.command.help", true);
             return true;
         }

@@ -46,6 +46,7 @@ public class SA extends JavaPlugin {
     Rank rank = new Rank();
     RankListener rL = new RankListener();
     RankManager rM = new RankManager(this);
+    boolean delayLogin = true;
 
     @Override
     public void onEnable() {
@@ -56,6 +57,7 @@ public class SA extends JavaPlugin {
         CustomEntities.registerEntities();
         startTips();
         setPermMessages();
+        loginDelay();
     }
 
     @Override
@@ -119,6 +121,20 @@ public class SA extends JavaPlugin {
                 }
             }
         },50L, 3000);
+    }
+
+    public void loginDelay() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+
+            @Override
+            public void run() {
+                delayLogin = false;
+            }
+        },20L);
+    }
+
+    public boolean getDelayLogin() {
+        return delayLogin;
     }
 
     public enum CustomEntities {
