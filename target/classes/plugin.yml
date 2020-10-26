@@ -1,0 +1,47 @@
+name: SA
+version: 2.1.4
+author: Kilobytes
+main:  io.github.kilobytz.sa.SA
+description: Commands for SA dungeon server.
+permissions:
+  sa.*:
+    description: Gives all permissions for the plugin.
+    default: op
+    children:
+      sa.warp: true
+      sa.misc: true
+    sa.warp:
+      description: Gives warp commands.
+      default: op
+    sa.misc:
+      description: Gives all misc commands.
+      default: op
+
+commands:
+  heal:
+    description: Heals the user to full health.
+  spawn:
+    description: Returns the user to the spawn.
+  ded:
+    description: Kills the user.
+  warp:
+    description: Warps the user to the designated warp.
+    permission: sa.warp
+  setwarp:
+    description: Sets the user's position to the designated warp name.
+    permission: sa.warp
+  delwarp:
+    description: Deletes the designated warp.
+    permission: sa.warp
+  spawnboss:
+    description: Spawns custom boss.
+    permission: sa.misc
+  boom:
+    description: Spawns explosion particles.
+    permission: sa.misc
+  tip:
+    description: Controls server tips.
+    permission: sa.admin
+  rank:
+    description: Edits ranks.
+    permission: sa.admin
