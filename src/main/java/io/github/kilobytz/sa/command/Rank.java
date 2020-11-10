@@ -138,15 +138,17 @@ public class Rank implements TabExecutor {
             }
             if(args.length == 3) {
                 ArrayList<String> ranks = new ArrayList<>();
-                if (!args[2].equals("")) {
-                    for (String entry : rM.getRanks()) {
-                        if (entry.toLowerCase().startsWith(args[2].toLowerCase())) {
+                if(args[0].equalsIgnoreCase("add")) {
+                    if (!args[2].equals("")) {
+                        for (String entry : rM.getRanks()) {
+                            if (entry.toLowerCase().startsWith(args[2].toLowerCase())) {
+                                ranks.add(entry.toLowerCase());
+                            }
+                        }
+                    } else {
+                        for (String entry : rM.getRanks()) {
                             ranks.add(entry.toLowerCase());
                         }
-                    }
-                } else {
-                    for (String entry : rM.getRanks()) {
-                        ranks.add(entry.toLowerCase());
                     }
                 }
                 return ranks;

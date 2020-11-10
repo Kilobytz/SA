@@ -20,6 +20,7 @@ public class RankManager {
         this.main = main;
         ranks.put("Admin",ChatColor.RED);
         ranks.put("Builder",ChatColor.GREEN);
+        ranks.put("Owner",ChatColor.BLUE);
     }
 
     public void builder(Player player) {
@@ -28,29 +29,61 @@ public class RankManager {
         player.addAttachment(main,"sa.warp",true);
 
     }
-    public boolean removeRanks(Player player) {
-        if(player.isOp()) {
-            player.setOp(false);
-            resetName(player);
-            return true;
+
+    public void admin(Player player) {
+        if(!player.isOp()) {
+           player.setOp(true);
         }
+        player.addAttachment(main, "minecraft.command.op", false);
+        player.addAttachment(main, "minecraft.command.deop",false);
+        player.addAttachment(main, "minecraft.command.stop",false);
+        player.addAttachment(main, "sa.admin",false);
+    }
+    public void owner(Player player) {
+        removeRanks(player);
+        main.getConfig().set("users." + player.getUniqueId().toString(), "owner");
+        main.saveConfig();
+        player.setOp(true);
+    }
+
+    public boolean removeRanks(Player player) {
         if(doesPlayerHaveRank(player)) {
+            if(player.isOp()) {
+                player.setOp(false);
+            }
             PermissionAttachment pa = new PermissionAttachment(main, player);
             Set perms = player.getEffectivePermissions();
             for (Object perm : perms) {
                 PermissionAttachmentInfo pai = (PermissionAttachmentInfo) perm;
                 if(pai.getAttachment() != null) {
-                    player.sendMessage(pai.getPermission());
                     player.removeAttachment(pai.getAttachment());
                 }
             }
-            resetName(player);
-            main.getConfig().set("users." + player.getUniqueId().toString(), null);
-            main.saveConfig();
+            removeRankIntric(player);
             player.addAttachment(main, "minecraft.command.help", true);
+            player.addAttachment(main, "minecraft.command.msg", true);
+            player.addAttachment(main, "minecraft.command.me", true);
+            player.addAttachment(main, "bukkit.command.version", true);
+            player.addAttachment(main, "bukkit.command.help", true);
+            player.addAttachment(main, "bukkit.command.plugins", true);
+            player.addAttachment(main, "sa.general", true);
+            
             return true;
         }
         return false;
+    }
+    
+    public void removeRankIntric(Player player) {
+        resetName(player);
+        main.getConfig().set("users." + player.getUniqueId().toString(), null);
+        main.saveConfig();
+        //player.addAttachment(main, "minecraft.command.help", true);
+        //player.addAttachment(main, "minecraft.command.msg", true);
+        //player.addAttachment(main, "minecraft.command.me", true);
+        // player.addAttachment(main, "bukkit.command.version", true);
+        //player.addAttachment(main, "bukkit.command.help", true);
+        //player.addAttachment(main, "bukkit.command.plugins", true);
+
     }
 
     public boolean doesPlayerHaveRank(Player player) {
@@ -59,7 +92,6 @@ public class RankManager {
             for (String key : main.getConfig().getConfigurationSection("users").getKeys(false)) {
                 if (key.equalsIgnoreCase(ID)) {
                     if(main.getConfig().get("users." + ID) == null) {
-                        main.saveConfig();
                         return false;
                     }
                 }
@@ -74,17 +106,21 @@ public class RankManager {
         UUID playerID = Bukkit.getPlayer(name).getUniqueId();
         List users = new LinkedList();
 
+        removeRanks(Bukkit.getPlayer(playerID));
         main.getConfig().set("users." + playerID.toString(), rank);
         main.saveConfig();
 
         switch (rank) {
             case "builder":
-                removeRanks(Bukkit.getPlayer(playerID));
                 builder(Bukkit.getPlayer(playerID));
                 setTitle(Bukkit.getPlayer(playerID),rank);
                 return true;
             case "admin" :
-                Bukkit.getPlayer(playerID).setOp(true);
+                admin(Bukkit.getPlayer(playerID));
+                setTitle(Bukkit.getPlayer(playerID),rank);
+                return true;
+            case "owner" :
+                owner(Bukkit.getPlayer(playerID));
                 setTitle(Bukkit.getPlayer(playerID),rank);
                 return true;
             default:

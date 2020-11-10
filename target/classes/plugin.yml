@@ -1,29 +1,33 @@
 name: SA
-version: 2.1.4
+version: 2.1.9
 author: Kilobytes
 main:  io.github.kilobytz.sa.SA
 description: Commands for SA dungeon server.
 permissions:
-  sa.*:
-    description: Gives all permissions for the plugin.
-    default: op
-    children:
-      sa.warp: true
-      sa.misc: true
+    sa.general:
+      description: Gives public commands
+      default: true
     sa.warp:
       description: Gives warp commands.
       default: op
     sa.misc:
       description: Gives all misc commands.
       default: op
+    sa.admin:
+      description:
+      default: op
+
 
 commands:
   heal:
     description: Heals the user to full health.
+    permission: sa.general
   spawn:
     description: Returns the user to the spawn.
+    permission: sa.general
   ded:
     description: Kills the user.
+    permission: sa.general
   warp:
     description: Warps the user to the designated warp.
     permission: sa.warp
