@@ -40,9 +40,6 @@ commands:
   spawnboss:
     description: Spawns custom boss.
     permission: sa.misc
-  boom:
-    description: Spawns explosion particles.
-    permission: sa.misc
   tip:
     description: Controls server tips.
     permission: sa.admin

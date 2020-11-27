@@ -91,20 +91,20 @@ public class RankManager {
             String ID = player.getUniqueId().toString();
             for (String key : main.getConfig().getConfigurationSection("users").getKeys(false)) {
                 if (key.equalsIgnoreCase(ID)) {
-                    if(main.getConfig().get("users." + ID) == null) {
-                        return false;
+                    if(!(main.getConfig().get("users." + ID) == null)) {
+                        return true;
                     }
+
                 }
             }
         }catch(NullPointerException e) {
             return false;
         }
-        return true;
+        return false;
     }
 
     public boolean setRank(String name, String rank) {
         UUID playerID = Bukkit.getPlayer(name).getUniqueId();
-        List users = new LinkedList();
 
         removeRanks(Bukkit.getPlayer(playerID));
         main.getConfig().set("users." + playerID.toString(), rank);

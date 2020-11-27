@@ -1,5 +1,5 @@
 name: SA
-version: 2.1.9
+version: 2.3
 author: Kilobytes
 main:  io.github.kilobytz.sa.SA
 description: Commands for SA dungeon server.
@@ -39,9 +39,6 @@ commands:
     permission: sa.warp
   spawnboss:
     description: Spawns custom boss.
-    permission: sa.misc
-  boom:
-    description: Spawns explosion particles.
     permission: sa.misc
   tip:
     description: Controls server tips.

@@ -1,40 +1,27 @@
 package io.github.kilobytz.sa.ranks;
 
-import com.mojang.authlib.GameProfile;
-import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.misc.Reflection;
-import io.github.kilobytz.sa.misc.TinyProtocol;
-import io.netty.channel.Channel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import net.minecraft.server.v1_12_R1.EnumGamemode;
-import net.minecraft.server.v1_12_R1.IChatBaseComponent;
-import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+//import java.util.List;
+
 import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.block.CommandBlock;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.server.ServerCommandEvent;
-import org.bukkit.plugin.Plugin;
+
+import io.github.kilobytz.sa.SA;
+//import io.github.kilobytz.sa.misc.Reflection;
+//import io.github.kilobytz.sa.misc.TinyProtocol;
 
 public class RankListener implements Listener {
   RankManager rM;
   
   SA main;
   
-  private TinyProtocol protocol;
+  //private TinyProtocol protocol;
   
-  private Class<?> playerInfoClass = Reflection.getClass("{nms}.PacketPlayOutPlayerInfo");
+  //private Class<?> playerInfoClass = Reflection.getClass("{nms}.PacketPlayOutPlayerInfo");
   
-  private Reflection.FieldAccessor<List> playerInfo = Reflection.getField(this.playerInfoClass, "b", List.class);
+  //private Reflection.FieldAccessor<List> playerInfo = Reflection.getField(this.playerInfoClass, "b", List.class);
   
   public void setRanks(RankManager rM, SA main) {
     this.rM = rM;
@@ -61,12 +48,12 @@ public class RankListener implements Listener {
             this.rM.setTitle(event.getPlayer(), "owner");
         return;
         default:
-            if(event.getPlayer().isOp()) {
-              event.getPlayer().setOp(false);
-            }
-            event.getPlayer().setGameMode(GameMode.ADVENTURE);
       }
     }
+    if(event.getPlayer().isOp()) {
+      event.getPlayer().setOp(false);
+    }
+    event.getPlayer().setGameMode(GameMode.ADVENTURE);
   }
     
 

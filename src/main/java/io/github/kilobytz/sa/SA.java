@@ -1,29 +1,37 @@
 package io.github.kilobytz.sa;
 
+import java.io.File;
 
-import io.github.kilobytz.sa.command.*;
-import io.github.kilobytz.sa.entities.EntityManager;
-import io.github.kilobytz.sa.entities.ShulkerBoss;
-import io.github.kilobytz.sa.commandfunctions.CollisionManager;
-import io.github.kilobytz.sa.commandfunctions.WarpHandling;
-import io.github.kilobytz.sa.misc.NoInteracting;
-import io.github.kilobytz.sa.ranks.RankListener;
-import io.github.kilobytz.sa.ranks.RankManager;
-import io.github.kilobytz.sa.tips.TipManager;
-import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import io.github.kilobytz.sa.command.DelWarp;
+import io.github.kilobytz.sa.command.Heal;
+import io.github.kilobytz.sa.command.Rank;
+import io.github.kilobytz.sa.command.SetWarp;
+import io.github.kilobytz.sa.command.Spawn;
+import io.github.kilobytz.sa.command.SpawnShulkerBoss;
+import io.github.kilobytz.sa.command.Suicide;
+import io.github.kilobytz.sa.command.Tip;
+import io.github.kilobytz.sa.command.Warp;
+import io.github.kilobytz.sa.commandfunctions.CollisionManager;
+import io.github.kilobytz.sa.commandfunctions.WarpHandling;
+import io.github.kilobytz.sa.entities.EntityManager;
+import io.github.kilobytz.sa.entities.ShulkerBoss;
+import io.github.kilobytz.sa.misc.NoInteracting;
+import io.github.kilobytz.sa.misc.Pistons;
+import io.github.kilobytz.sa.misc.Grapple;
+import io.github.kilobytz.sa.ranks.RankListener;
+import io.github.kilobytz.sa.ranks.RankManager;
+import io.github.kilobytz.sa.tips.TipManager;
+import net.minecraft.server.v1_12_R1.Entity;
+import net.minecraft.server.v1_12_R1.EntityShulker;
+import net.minecraft.server.v1_12_R1.EntityTypes;
+import net.minecraft.server.v1_12_R1.MinecraftKey;
 
 
 public class SA extends JavaPlugin {
@@ -40,13 +48,15 @@ public class SA extends JavaPlugin {
     Spawn spawn = new Spawn();
     Heal heal = new Heal();
     SpawnShulkerBoss sBoss = new SpawnShulkerBoss();
-    Boom boom = new Boom();
     TipManager tM = new TipManager(this);
     Tip tip = new Tip();
     Rank rank = new Rank();
+    Pistons pst = new Pistons();
     RankListener rL = new RankListener();
     RankManager rM = new RankManager(this);
+    Grapple grapple = new Grapple(this);
     boolean delayLogin = true;
+
 
     @Override
     public void onEnable() {
@@ -73,7 +83,6 @@ public class SA extends JavaPlugin {
         this.getCommand("spawn").setExecutor(this.spawn);
         this.getCommand("heal").setExecutor(this.heal);
         this.getCommand("spawnboss").setExecutor(this.sBoss);
-        this.getCommand("boom").setExecutor(this.boom);
         this.getCommand("tip").setExecutor(this.tip);
         this.getCommand("rank").setExecutor(this.rank);
     }
@@ -87,7 +96,6 @@ public class SA extends JavaPlugin {
         this.getCommand("spawn").setPermissionMessage(ob);
         this.getCommand("heal").setPermissionMessage(ob);
         this.getCommand("spawnboss").setPermissionMessage(ob);
-        this.getCommand("boom").setPermissionMessage(ob);
         this.getCommand("tip").setPermissionMessage(ob);
     }
 
@@ -97,6 +105,8 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.eM, this);
         pluginManager.registerEvents(this.pNH, this);
         pluginManager.registerEvents(this.rL, this);
+        pluginManager.registerEvents(this.pst, this);
+        pluginManager.registerEvents(this.grapple, this);
     }
 
     public void classSetups() {
@@ -107,6 +117,7 @@ public class SA extends JavaPlugin {
         tip.setTipData(tM);
         rL.setRanks(rM,this);
         rank.setRankData(rM);
+        pNH.setRanks(rM, this);
     }
 
     public void startTips() {
@@ -188,8 +199,6 @@ public class SA extends JavaPlugin {
             return customClass;
         }
     }
-
-
 
 
     private void createConfig() {
