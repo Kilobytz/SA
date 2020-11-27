@@ -58,7 +58,8 @@ public class Grapple implements Listener {
                 double dY = locHook.getY()-player.getLocation().getY();
                 double dZ = locHook.getZ()-player.getLocation().getZ();
 
-            
+                //Big thanks to 111kittycat111/ACatThatCanParkourReallyWell#9900 for helping me with this math formula.
+
                 Vector v = new Vector(dX*0.1985,dY*0.1985,dZ*0.1985);
 
 
@@ -68,7 +69,7 @@ public class Grapple implements Listener {
         }
     }
     
-    @EventHandler
+    /*@EventHandler
     public void projLaunch(ProjectileLaunchEvent event) {
         if(event.getEntity() instanceof FishHook) {
             if(event.getEntity().getVelocity().getY() > 0) {
@@ -77,6 +78,7 @@ public class Grapple implements Listener {
         }
     
     }
+    */
     @EventHandler
     public void projHit (ProjectileHitEvent event) {
         if(event.getEntity() instanceof FishHook) {
