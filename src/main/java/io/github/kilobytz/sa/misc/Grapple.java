@@ -1,11 +1,14 @@
 package io.github.kilobytz.sa.misc;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.FishHook;
 import org.bukkit.entity.Player;
@@ -48,9 +51,6 @@ public class Grapple implements Listener {
                 blockUnderHook.getType() == Material.STATIONARY_WATER) {
                     return;
                 }
-                if (event.getState() == PlayerFishEvent.State.IN_GROUND) {
-                    item.setDurability((short)(item.getDurability() - 2));
-                }
         
                 event.getPlayer().getWorld().playSound(event.getPlayer().getEyeLocation(), Sound.ENTITY_HORSE_STEP, 1, 3);
 
@@ -60,11 +60,26 @@ public class Grapple implements Listener {
 
                 //Big thanks to 111kittycat111/ACatThatCanParkourReallyWell#9900 for helping me with this math formula.
 
-                Vector v = new Vector(dX*0.1985,dY*0.1985,dZ*0.1985);
+                Vector v = new Vector(dX*0.2,dY*0.2,dZ*0.2);
 
 
                 player.setVelocity(v);
-                item.setDurability((short)(item.getDurability() + 10));
+                Map<Enchantment, Integer> itemsEnch = item.getEnchantments();
+                if(itemsEnch.containsKey(Enchantment.DURABILITY)) {
+                    switch(itemsEnch.get(Enchantment.DURABILITY)) {
+                        case 1 :
+                        item.setDurability((short)(item.getDurability() + 4));
+                        return;
+                        case 2 :
+                        item.setDurability((short)(item.getDurability() + 2));
+                        return;
+                        case 3 :
+                        item.setDurability((short)(item.getDurability() + 1));
+                        return;
+                        default :
+                    }
+                }
+                item.setDurability((short)(item.getDurability() + 8));
             }
         }
     }
