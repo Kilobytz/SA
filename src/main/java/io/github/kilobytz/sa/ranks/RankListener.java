@@ -9,24 +9,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import io.github.kilobytz.sa.SA;
-//import io.github.kilobytz.sa.misc.Reflection;
-//import io.github.kilobytz.sa.misc.TinyProtocol;
 
 public class RankListener implements Listener {
   RankManager rM;
   
   SA main;
   
-  //private TinyProtocol protocol;
-  
-  //private Class<?> playerInfoClass = Reflection.getClass("{nms}.PacketPlayOutPlayerInfo");
-  
-  //private Reflection.FieldAccessor<List> playerInfo = Reflection.getField(this.playerInfoClass, "b", List.class);
+ 
   
   public void setRanks(RankManager rM, SA main) {
     this.rM = rM;
     this.main = main;
-    //packetListen();
+
   }
 
   
@@ -62,30 +56,8 @@ public class RankListener implements Listener {
     if (this.main.getDelayLogin())
       event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Server is still starting! Please wait before reconnecting."); 
   }
-  
-  /*public void packetListen() {
-    this.protocol = new TinyProtocol((Plugin)this.main) {
-        public Object onPacketOutAsync(Player receiver, Channel channel, Object packet) {
-          if (packet instanceof PacketPlayOutPlayerInfo) {
-            List<Object> packetData = (List<Object>)RankListener.this.playerInfo.get(packet);
-            List<PacketPlayOutPlayerInfo.PlayerInfoData> newInfoList = new ArrayList<>();
-            for (Object data : packetData) {
-              PacketPlayOutPlayerInfo.PlayerInfoData playerInfoData = (PacketPlayOutPlayerInfo.PlayerInfoData)data;
-              UUID playerID = playerInfoData.a().getId();
-              try {
-                PacketPlayOutPlayerInfo testPack = (PacketPlayOutPlayerInfo)packet;
-                if (RankListener.this.rM.doesPlayerHaveRank(Bukkit.getPlayer(playerID))) {
-                  String rank = (String)RankListener.this.main.getConfig().get("users." + playerID.toString());
 
-                }
-              } catch (NullPointerException e) {
-                receiver.sendMessage("something broke.");
-              } 
-            }
-          } 
-          return super.onPacketOutAsync(receiver, channel, packet);
-        }
-      };
-  }
-  */
+  
+ 
+  
 }

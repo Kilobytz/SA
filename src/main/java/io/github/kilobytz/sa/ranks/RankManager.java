@@ -3,18 +3,35 @@ package io.github.kilobytz.sa.ranks;
 import java.lang.reflect.*;
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.command.Rank;
+import io.github.kilobytz.sa.misc.Reflection;
+import net.minecraft.server.v1_12_R1.EntityHuman;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
+
+import com.mojang.authlib.GameProfile;
 
 public class RankManager {
 
     SA main;
     HashMap<String, ChatColor> ranks = new HashMap<>();
+
+    private Class<?> profileGame = Reflection.getClass("com.mojang.authlib.GameProfile");
+    private Class<?> entityPlay = Reflection.getClass("{nms}.EntityHuman");
+    
+    private Reflection.FieldAccessor<String> profilGameName = Reflection.getField(this.profileGame, "name", String.class);
+    private Reflection.FieldAccessor<GameProfile> entityProfileAcc = Reflection.getField(this.entityPlay, "g", GameProfile.class);
 
     public RankManager(SA main) {
         this.main = main;
@@ -138,11 +155,15 @@ public class RankManager {
     public void setTitle(Player player,String rank) {
         for (Map.Entry<String, ChatColor> entry : ranks.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(rank)) {
-                resetName(player);
-                String name = player.getDisplayName();
-                player.setDisplayName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " + name);
-                player.setPlayerListName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " + name);
-                player.setCustomName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " + name);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
+                    public void run() {
+                        resetName(player);
+                        player.setDisplayName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " + player.getDisplayName());
+                        player.setPlayerListName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " +  player.getDisplayName());
+                        player.setCustomName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " +  player.getDisplayName());          
+                    }
+                }, 20L);
+                
             }
         }
     }

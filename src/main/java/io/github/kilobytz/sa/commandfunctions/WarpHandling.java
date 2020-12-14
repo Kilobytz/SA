@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class WarpHandling {
 
@@ -32,6 +33,11 @@ public class WarpHandling {
             return null;
         }
     }
+
+    public int getNumOfWarps() {
+        Set<String> warps = main.getConfig().getConfigurationSection("warps").getKeys(false);
+        return warps.size();
+        }
 
     public boolean checkWarp(String name) {
         List warps = new LinkedList();

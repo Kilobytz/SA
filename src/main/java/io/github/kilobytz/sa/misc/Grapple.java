@@ -54,13 +54,11 @@ public class Grapple implements Listener {
         
                 event.getPlayer().getWorld().playSound(event.getPlayer().getEyeLocation(), Sound.ENTITY_HORSE_STEP, 1, 3);
 
-                double dX = locHook.getX()-player.getLocation().getX();
-                double dY = locHook.getY()-player.getLocation().getY();
-                double dZ = locHook.getZ()-player.getLocation().getZ();
 
                 //Big thanks to 111kittycat111/ACatThatCanParkourReallyWell#9900 for helping me with this math formula.
+                //Also FloorIsJava for simplifying this trash
 
-                Vector v = new Vector(dX*0.2,dY*0.2,dZ*0.2);
+                final Vector v = locHook.toVector().subtract(player.getLocation().toVector()).multiply(0.2);
 
 
                 player.setVelocity(v);

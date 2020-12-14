@@ -24,6 +24,7 @@ import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.entities.ShulkerBoss;
 import io.github.kilobytz.sa.misc.NoInteracting;
 import io.github.kilobytz.sa.misc.Pistons;
+import io.github.kilobytz.sa.misc.CompassWarp;
 import io.github.kilobytz.sa.misc.Grapple;
 import io.github.kilobytz.sa.ranks.RankListener;
 import io.github.kilobytz.sa.ranks.RankManager;
@@ -55,6 +56,7 @@ public class SA extends JavaPlugin {
     RankListener rL = new RankListener();
     RankManager rM = new RankManager(this);
     Grapple grapple = new Grapple(this);
+    CompassWarp cWarp = new CompassWarp(this,wH);
     boolean delayLogin = true;
 
 
@@ -107,6 +109,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.rL, this);
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
+        pluginManager.registerEvents(this.cWarp, this);
     }
 
     public void classSetups() {
@@ -118,6 +121,7 @@ public class SA extends JavaPlugin {
         rL.setRanks(rM,this);
         rank.setRankData(rM);
         pNH.setRanks(rM, this);
+
     }
 
     public void startTips() {

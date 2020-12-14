@@ -21,8 +21,7 @@ public class Spawn implements TabExecutor {
         if (command.getName().equalsIgnoreCase("spawn")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
-                Location spawn = playerSent.getWorld().getSpawnLocation();
-                playerSent.teleport(spawn);
+                playerSent.teleport(playerSent.getWorld().getSpawnLocation());
                 return true;
             }
             sender.sendMessage("Error. You are not a player.");

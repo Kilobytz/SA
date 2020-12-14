@@ -28,7 +28,7 @@ public class Warp implements TabExecutor {
                     int length = args.length;
                     if (length == 0) {
                         List<String> allWarps = warpHandling.getAllWarps();
-                        if(allWarps != null) {
+                        if(allWarps.size() != 0) {
                             String warpString = allWarps.get(0);
                             if(allWarps.size() > 1) {
                                 String symbol = ", ";
