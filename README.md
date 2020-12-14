@@ -1,1 +1,1 @@
-#Simoon's Avenger's practice server plugin
+# Simoon's Avenger's practice server plugin
