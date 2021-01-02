@@ -1,6 +1,5 @@
 package io.github.kilobytz.sa.ranks;
 
-//import java.util.List;
 
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
@@ -20,7 +19,6 @@ public class RankListener implements Listener {
   public void setRanks(RankManager rM, SA main) {
     this.rM = rM;
     this.main = main;
-
   }
 
   

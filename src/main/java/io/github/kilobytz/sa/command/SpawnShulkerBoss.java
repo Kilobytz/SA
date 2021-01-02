@@ -30,14 +30,10 @@ public class SpawnShulkerBoss implements TabExecutor {
                 if(length != 3) {
                     return true;
                 }
-
                 List<Player> peeps = (List<Player>) Bukkit.getOnlinePlayers();
                 UUID id = peeps.get(0).getUniqueId();
-                double x = parseDouble(args[0]);
-                double y = parseDouble(args[1]);
-                double z = parseDouble(args[2]);
                 ShulkerBoss boss = new ShulkerBoss(((CraftWorld) Bukkit.getPlayer(id).getWorld()).getHandle());
-                boss.spawn(x,y,z,((CraftWorld) Bukkit.getPlayer(id).getWorld()).getHandle());
+                boss.spawn(parseDouble(args[0]),parseDouble(args[1]),parseDouble(args[2]),((CraftWorld) Bukkit.getPlayer(id).getWorld()).getHandle());
                 return true;
             }
             sender.sendMessage(String.format("%sI'm sorry, but you do not have permission to perform this command. Please contact the server administrator if you believe that this is in error.", ChatColor.RED));

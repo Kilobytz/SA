@@ -1,14 +1,9 @@
 package io.github.kilobytz.sa.misc;
 
-import java.lang.annotation.Retention;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.concurrent.BackgroundInitializer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -22,7 +17,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.commandfunctions.WarpHandling;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 
 public class CompassWarp implements Listener{ 

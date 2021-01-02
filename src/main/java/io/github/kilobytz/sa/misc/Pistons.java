@@ -9,8 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.util.Vector;
 
-import io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
-
 public class Pistons implements Listener {
 
     @EventHandler

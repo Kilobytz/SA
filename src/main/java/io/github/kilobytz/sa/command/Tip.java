@@ -1,15 +1,17 @@
 package io.github.kilobytz.sa.command;
 
-import io.github.kilobytz.sa.commandfunctions.WarpHandling;
-import io.github.kilobytz.sa.tips.TipManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 
-import java.util.*;
+import io.github.kilobytz.sa.tips.TipManager;
 
 public class Tip implements TabExecutor {
 
@@ -45,9 +47,9 @@ public class Tip implements TabExecutor {
                             return true;
                         }
                         String tipMessage = args[1];
-                        for(int i = 0; i < args.length;++i) {
+                        for(int i = 0; i < args.length; ++i) {
                             if(i > 1) {
-                                tipMessage = tipMessage + " " + args[i];
+                                tipMessage += " " + args[i];
                             }
                         }
                         tM.setTip(tipMessage);

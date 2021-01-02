@@ -17,31 +17,28 @@ public class TipManager {
     }
 
     public void setTip(String tip) {
-        int tipNum = numOfTips();
-        main.getConfig().set("tips."+(tipNum+1), tip);
+        main.getConfig().set("tips."+(numOfTips()+1), tip);
         main.saveConfig();
     }
 
     public void delTip(int tipNum) {
-        int tipNumMax = numOfTips();
         if(main.getConfig().get("tips."+(tipNum+1)) == null) {
             main.getConfig().set("tips."+tipNum,null);
             main.saveConfig();
             return;
         }
-        reshuffle(tipNum,tipNumMax);
+        reshuffle(tipNum,numOfTips());
         main.saveConfig();
     }
 
     public String getTip() {
-        List<String> tips = new LinkedList();
+        List<String> tips = new LinkedList<>();
         try {
             for (String key : main.getConfig().getConfigurationSection("tips").getKeys(false)) {
                 tips.add(key);
             }
             Random random = new Random();
-            int numTip = random.nextInt(numOfTips() - 1 + 1) + 1;
-            String message = (String) main.getConfig().get("tips."+(numTip));
+            String message = (String) main.getConfig().get("tips."+((random.nextInt(numOfTips() - 1 + 1) + 1)));
             return message;
         } catch (NullPointerException e) {
             return null;
@@ -49,7 +46,7 @@ public class TipManager {
     }
 
     public String getTipSpec(int num) {
-        List<String> tips = new LinkedList();
+        List<String> tips = new LinkedList<>();
         try {
             for (String key : main.getConfig().getConfigurationSection("tips").getKeys(false)) {
                 tips.add(key);
@@ -62,12 +59,11 @@ public class TipManager {
     }
 
     public int numOfTips() {
-        List<String> tips = new LinkedList();
+        List<String> tips = new LinkedList<>();
         try {
             for (String key : main.getConfig().getConfigurationSection("tips").getKeys(false)) {
                 tips.add(key);
             }
-            int num = (int) (1 + tips.size() + Math.random());
             return tips.size();
         } catch (NullPointerException e) {
             return 0;
@@ -76,9 +72,8 @@ public class TipManager {
 
     public void listTips(CommandSender sender) {
         int roll = 0;
-        int rollMax = numOfTips();
         try {
-            while (roll < rollMax) {
+            while (roll < numOfTips()) {
                 sender.sendMessage(Integer.toString(roll + 1) + " : " + getTipSpec(roll+1));
                 ++roll;
             }
@@ -94,7 +89,7 @@ public class TipManager {
 
     public void reshuffle(int num,int max) {
         int base = num;
-        while(base < max) {
+        while(num < max) {
 
             main.getConfig().set("tips."+base,main.getConfig().get("tips."+(base+1)));
             ++base;

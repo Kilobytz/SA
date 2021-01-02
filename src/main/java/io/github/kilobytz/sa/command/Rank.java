@@ -1,18 +1,19 @@
 package io.github.kilobytz.sa.command;
 
-import io.github.kilobytz.sa.ranks.RankManager;
-import io.github.kilobytz.sa.tips.TipManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.github.kilobytz.sa.ranks.RankManager;
 
 public class Rank implements TabExecutor {
 
@@ -33,6 +34,11 @@ public class Rank implements TabExecutor {
 
 
         if (command.getName().equalsIgnoreCase("rank")) {
+
+            if(sender instanceof CommandBlock) {
+                sender.sendMessage("Error. Command Blocks cannot edit ranks.");
+                return true;
+            }
 
                 if(args.length < 2 || args.length > 3 ) {
                     sender.sendMessage("Invalid command." + ChatColor.RED);

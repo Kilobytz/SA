@@ -1,26 +1,19 @@
 package io.github.kilobytz.sa.ranks;
 
-import java.lang.reflect.*;
-import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.command.Rank;
-import io.github.kilobytz.sa.misc.Reflection;
-import net.minecraft.server.v1_12_R1.EntityHuman;
-import net.minecraft.server.v1_12_R1.EntityPlayer;
-import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team;
 
-import java.util.*;
-
-import com.mojang.authlib.GameProfile;
+import io.github.kilobytz.sa.SA;
+import io.github.kilobytz.sa.misc.Reflection;
 
 public class RankManager {
 
@@ -68,9 +61,7 @@ public class RankManager {
             if(player.isOp()) {
                 player.setOp(false);
             }
-            PermissionAttachment pa = new PermissionAttachment(main, player);
-            Set perms = player.getEffectivePermissions();
-            for (Object perm : perms) {
+            for (Object perm : player.getEffectivePermissions()) {
                 PermissionAttachmentInfo pai = (PermissionAttachmentInfo) perm;
                 if(pai.getAttachment() != null) {
                     player.removeAttachment(pai.getAttachment());
@@ -94,13 +85,6 @@ public class RankManager {
         resetName(player);
         main.getConfig().set("users." + player.getUniqueId().toString(), null);
         main.saveConfig();
-        //player.addAttachment(main, "minecraft.command.help", true);
-        //player.addAttachment(main, "minecraft.command.msg", true);
-        //player.addAttachment(main, "minecraft.command.me", true);
-        // player.addAttachment(main, "bukkit.command.version", true);
-        //player.addAttachment(main, "bukkit.command.help", true);
-        //player.addAttachment(main, "bukkit.command.plugins", true);
-
     }
 
     public boolean doesPlayerHaveRank(Player player) {

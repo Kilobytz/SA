@@ -33,7 +33,7 @@ public class Warp implements TabExecutor {
                             if(allWarps.size() > 1) {
                                 String symbol = ", ";
                                 for (String warps : allWarps) {
-                                    warpString = warpString + (symbol + warps);
+                                    warpString += (symbol + warps);
                                 }
                             }
                             playerSent.sendMessage(warpString);
