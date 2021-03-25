@@ -60,6 +60,9 @@ public class Grapple implements Listener {
 
                 player.setVelocity(v);
                 Map<Enchantment, Integer> itemsEnch = item.getEnchantments();
+                if(itemsEnch.containsKey(Enchantment.LUCK)) {
+                    return;
+                }
                 if(itemsEnch.containsKey(Enchantment.DURABILITY)) {
                     switch(itemsEnch.get(Enchantment.DURABILITY)) {
                         case 1 :

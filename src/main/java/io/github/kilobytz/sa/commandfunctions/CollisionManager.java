@@ -30,7 +30,7 @@ public class CollisionManager implements Listener {
             }
         }catch (NullPointerException e) {
             Team collision = board.registerNewTeam("collision");
-            collision.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
+            collision.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
             board.getTeam("collision").addEntry(event.getPlayer().getDisplayName());
         }
     }

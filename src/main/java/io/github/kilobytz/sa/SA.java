@@ -26,6 +26,7 @@ import io.github.kilobytz.sa.misc.NoInteracting;
 import io.github.kilobytz.sa.misc.Pistons;
 import io.github.kilobytz.sa.misc.CompassWarp;
 import io.github.kilobytz.sa.misc.Grapple;
+import io.github.kilobytz.sa.misc.KittyDrugs;
 import io.github.kilobytz.sa.ranks.RankListener;
 import io.github.kilobytz.sa.ranks.RankManager;
 import io.github.kilobytz.sa.tips.TipManager;
@@ -57,6 +58,7 @@ public class SA extends JavaPlugin {
     RankManager rM = new RankManager(this);
     Grapple grapple = new Grapple(this);
     CompassWarp cWarp = new CompassWarp(this,wH);
+    KittyDrugs crack = new KittyDrugs();
     boolean delayLogin = true;
 
 
@@ -110,6 +112,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
         pluginManager.registerEvents(this.cWarp, this);
+        pluginManager.registerEvents(this.crack, this);   
     }
 
     public void classSetups() {

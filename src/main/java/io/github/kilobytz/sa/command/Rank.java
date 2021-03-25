@@ -106,7 +106,7 @@ public class Rank implements TabExecutor {
     }
 
     public boolean checkRankName(String name) {
-        for(String rankName : rM.getRanks()) {
+        for(String rankName : rM.getRanksList()) {
             if(rankName.equalsIgnoreCase(name)) {
                 return true;
             }
@@ -146,13 +146,13 @@ public class Rank implements TabExecutor {
                 ArrayList<String> ranks = new ArrayList<>();
                 if(args[0].equalsIgnoreCase("add")) {
                     if (!args[2].equals("")) {
-                        for (String entry : rM.getRanks()) {
+                        for (String entry : rM.getRanksList()) {
                             if (entry.toLowerCase().startsWith(args[2].toLowerCase())) {
                                 ranks.add(entry.toLowerCase());
                             }
                         }
                     } else {
-                        for (String entry : rM.getRanks()) {
+                        for (String entry : rM.getRanksList()) {
                             ranks.add(entry.toLowerCase());
                         }
                     }

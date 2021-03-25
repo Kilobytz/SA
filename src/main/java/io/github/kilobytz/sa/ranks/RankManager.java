@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.misc.Reflection;
@@ -20,11 +22,6 @@ public class RankManager {
     SA main;
     HashMap<String, ChatColor> ranks = new HashMap<>();
 
-    private Class<?> profileGame = Reflection.getClass("com.mojang.authlib.GameProfile");
-    private Class<?> entityPlay = Reflection.getClass("{nms}.EntityHuman");
-    
-    private Reflection.FieldAccessor<String> profilGameName = Reflection.getField(this.profileGame, "name", String.class);
-    private Reflection.FieldAccessor<GameProfile> entityProfileAcc = Reflection.getField(this.entityPlay, "g", GameProfile.class);
 
     public RankManager(SA main) {
         this.main = main;
@@ -50,7 +47,6 @@ public class RankManager {
         player.addAttachment(main, "sa.admin",false);
     }
     public void owner(Player player) {
-        removeRanks(player);
         main.getConfig().set("users." + player.getUniqueId().toString(), "owner");
         main.saveConfig();
         player.setOp(true);
@@ -58,6 +54,13 @@ public class RankManager {
 
     public boolean removeRanks(Player player) {
         if(doesPlayerHaveRank(player)) {
+            ScoreboardManager manager = Bukkit.getScoreboardManager();
+            Scoreboard mainBoard = manager.getMainScoreboard();
+            for(String rank : ranks.keySet()) {
+                try{
+                    mainBoard.getTeam(rank).removeEntry(rank);
+                }catch(NullPointerException e) {}
+            }
             if(player.isOp()) {
                 player.setOp(false);
             }
@@ -82,7 +85,6 @@ public class RankManager {
     }
     
     public void removeRankIntric(Player player) {
-        resetName(player);
         main.getConfig().set("users." + player.getUniqueId().toString(), null);
         main.saveConfig();
     }
@@ -132,28 +134,45 @@ public class RankManager {
     }
 
 
-    public ArrayList<String> getRanks() {
+    public ArrayList<String> getRanksList() {
         return new ArrayList<>(ranks.keySet());
+    }
+
+    public void checkRank(String rank, Player player) {
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        Scoreboard mainBoard = manager.getMainScoreboard();
+        if(!mainBoard.getTeam(rank).hasEntry(player.getDisplayName())){
+            mainBoard.getTeam(rank).addEntry(player.getName());
+        }
     }
 
     public void setTitle(Player player,String rank) {
         for (Map.Entry<String, ChatColor> entry : ranks.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(rank)) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
-                    public void run() {
-                        resetName(player);
-                        player.setDisplayName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " + player.getDisplayName());
-                        player.setPlayerListName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " +  player.getDisplayName());
-                        player.setCustomName(ChatColor.GOLD + "[" + entry.getValue() + entry.getKey() + ChatColor.GOLD + "]" + ChatColor.WHITE + " " +  player.getDisplayName());          
-                    }
-                }, 20L);
-                
+                ScoreboardManager manager = Bukkit.getScoreboardManager();
+                Scoreboard mainBoard = manager.getMainScoreboard();
+                mainBoard.getTeam(rank).addEntry(player.getDisplayName());
             }
         }
     }
-    public void resetName(Player player) {
-        player.setDisplayName(null);
-        player.setPlayerListName(null);
+    public HashMap<String, ChatColor> getRanksHash() {
+        return this.ranks;
+    }
+    public String getPlayerRank(Player player) {
+        try {
+            String ID = player.getUniqueId().toString();
+            for (String key : main.getConfig().getConfigurationSection("users").getKeys(false)) {
+                if (key.equalsIgnoreCase(ID)) {
+                    if(!(main.getConfig().get("users." + ID) == null)) {
+                        return (String) main.getConfig().get("users." + key); 
+                    }
+
+                }
+            }
+        }catch(NullPointerException e) {
+            return null;
+        }
+        return null;
     }
 
 }
