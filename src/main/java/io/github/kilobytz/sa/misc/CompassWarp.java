@@ -40,13 +40,11 @@ public class CompassWarp implements Listener{
                 final Player player = event.getPlayer();
                 if(nmsItem.hasTag()) {
                     if(nmsItem.getTag().hasKey("warper") && nmsItem.getTag().getInt("warper") == 1) {
-                        Inventory warperInv = warper();
-                        player.openInventory(warperInv);
+                        player.openInventory(warper());
                         return;
                     }
                     if(nmsItem.getTag().hasKey("warper") && nmsItem.getTag().getInt("warper") == 2) {
-                        Inventory warpInv = warpSetter();
-                        player.openInventory(warpInv);
+                        player.openInventory(warpSetter());
                         return;
                     }
                 }
@@ -95,16 +93,14 @@ public class CompassWarp implements Listener{
             }
             if(event.getInventory().getTitle().equalsIgnoreCase("warp add")) {
                 if(event.getCurrentItem().getType().equals(Material.INK_SACK) && event.getCurrentItem().getDurability() == 9) {
-                    int id1 = event.getInventory().getItem(8).getAmount();
-                    int id2 = event.getInventory().getItem(0).getAmount();
-                    Inventory addInv = addWarps(id1,id2);
+                    Inventory addInv = addWarps(event.getInventory().getItem(8).getAmount(),
+                    event.getInventory().getItem(0).getAmount());
                     event.getWhoClicked().openInventory(addInv);
                     return; 
                 }
                 if(event.getCurrentItem().getType().equals(Material.INK_SACK) && event.getCurrentItem().getDurability() == 13) {
-                    int id1 = event.getInventory().getItem(8).getAmount();
-                    int id2 = event.getInventory().getItem(0).getAmount()-2;
-                    Inventory addInv = addWarps(id1,id2);
+                    Inventory addInv = addWarps(event.getInventory().getItem(8).getAmount(),
+                    event.getInventory().getItem(0).getAmount()-2);
                     event.getWhoClicked().openInventory(addInv);
                     return;   
                 }
@@ -114,8 +110,8 @@ public class CompassWarp implements Listener{
                     return; 
                 }
                 if(event.getCurrentItem().getType().equals(Material.EYE_OF_ENDER)) {
-                    int id = event.getInventory().getItem(8).getAmount(); 
-                    main.getConfig().set("compass."+ id,  event.getCurrentItem().getItemMeta().getDisplayName());
+                    main.getConfig().set("compass."+ event.getInventory().getItem(8).getAmount(),
+                      event.getCurrentItem().getItemMeta().getDisplayName());
                     main.saveConfig();
                     Inventory warpInv = warpSetter();
                     event.getWhoClicked().openInventory(warpInv);

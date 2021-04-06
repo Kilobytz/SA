@@ -24,6 +24,7 @@ public class CollisionManager implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        setTeamConfig();
         try {
             if (!board.getTeam("collision").getEntries().contains(event.getPlayer().getDisplayName())) {
                 board.getTeam("collision").addEntry(event.getPlayer().getDisplayName());

@@ -1,9 +1,14 @@
 package io.github.kilobytz.sa;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Map;
 
+import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -22,18 +27,18 @@ import io.github.kilobytz.sa.commandfunctions.CollisionManager;
 import io.github.kilobytz.sa.commandfunctions.WarpHandling;
 import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.entities.ShulkerBoss;
-import io.github.kilobytz.sa.misc.NoInteracting;
-import io.github.kilobytz.sa.misc.Pistons;
 import io.github.kilobytz.sa.misc.CompassWarp;
 import io.github.kilobytz.sa.misc.Grapple;
 import io.github.kilobytz.sa.misc.KittyDrugs;
+import io.github.kilobytz.sa.misc.Mushroom;
+import io.github.kilobytz.sa.misc.NoInteracting;
+import io.github.kilobytz.sa.misc.Pistons;
+import io.github.kilobytz.sa.misc.Reflection;
+import io.github.kilobytz.sa.misc.Reflection.FieldAccessor;
+import io.github.kilobytz.sa.misc.Reflection.MethodInvoker;
 import io.github.kilobytz.sa.ranks.RankListener;
 import io.github.kilobytz.sa.ranks.RankManager;
 import io.github.kilobytz.sa.tips.TipManager;
-import net.minecraft.server.v1_12_R1.Entity;
-import net.minecraft.server.v1_12_R1.EntityShulker;
-import net.minecraft.server.v1_12_R1.EntityTypes;
-import net.minecraft.server.v1_12_R1.MinecraftKey;
 
 
 public class SA extends JavaPlugin {
@@ -61,6 +66,9 @@ public class SA extends JavaPlugin {
     KittyDrugs crack = new KittyDrugs();
     boolean delayLogin = true;
 
+    private MethodInvoker a1 = Reflection.getMethod("{nms}.Block", "a", SoundEffectType.class);
+    private MethodInvoker c1 = Reflection.getMethod("{nms}.Block", "c", float.class);
+
 
     @Override
     public void onEnable() {
@@ -72,6 +80,10 @@ public class SA extends JavaPlugin {
         startTips();
         setPermMessages();
         loginDelay();
+        Block mushroom = (new Mushroom());
+        a1.invoke(mushroom, SoundEffectType.c);
+        c1.invoke(mushroom, 0.0F);
+        mushroom.c("mushroom");
     }
 
     @Override
@@ -116,7 +128,6 @@ public class SA extends JavaPlugin {
     }
 
     public void classSetups() {
-        cM.setTeamConfig();
         warp.setup(wH);
         setWarp.setup(wH);
         delWarp.setup(wH);
@@ -140,6 +151,16 @@ public class SA extends JavaPlugin {
             }
         },50L, 3000);
     }
+
+    static void setFinalStatic(Field field, Object newValue) throws Exception {
+        field.setAccessible(true);
+  
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+  
+        field.set(null, newValue);
+     }
 
     public void loginDelay() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -224,5 +245,6 @@ public class SA extends JavaPlugin {
                 e.printStackTrace();
             }
     }
+
 
 }

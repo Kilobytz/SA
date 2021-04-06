@@ -30,8 +30,7 @@ public class NoInteracting implements Listener {
     @EventHandler
     public void onHangingHit(HangingBreakByEntityEvent event) {
             if(event.getRemover() instanceof Player) {
-                Player dmger = (Player) event.getRemover();
-                if (this.rM.doesPlayerHaveRank(dmger)) {
+                if (this.rM.doesPlayerHaveRank((Player) event.getRemover())) {
                    event.setCancelled(false);
                    return;
                 }
