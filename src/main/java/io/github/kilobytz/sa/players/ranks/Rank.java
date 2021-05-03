@@ -35,7 +35,7 @@ public class Rank {
         if(mainBoard.getTeam(getName()) == null) {
             Team rankTeam = mainBoard.registerNewTeam(getName());
             rankTeam.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-            rankTeam.setPrefix(getColour() + "[" + getName()  + "]" + ChatColor.WHITE);
+            rankTeam.setPrefix(getColour() + "[" + getName()  + "] " + ChatColor.WHITE);
         }
         if (!mainBoard.getTeam(getName()).getEntries().contains(player.getDisplayName())) {
             mainBoard.getTeam(getName()).addEntry(player.getDisplayName());
@@ -46,7 +46,8 @@ public class Rank {
     public void remove(SA main,Player player) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
             Scoreboard mainBoard = manager.getMainScoreboard();
-            mainBoard.getTeam(getName()).removeEntry(getName());
+            mainBoard.getTeam(getName()).removeEntry(player.getDisplayName());
+            mainBoard.getTeam("collision").addEntry(player.getDisplayName());
             if(player.isOp()) {
                 player.setOp(false);
             }
