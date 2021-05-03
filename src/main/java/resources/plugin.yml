@@ -3,7 +3,6 @@ version: ${project.version}
 author: Kilobytes
 main:  io.github.kilobytz.sa.SA
 description: Commands for SA dungeon server.
-load: STARTUP
 permissions:
     sa.general:
       description: Gives public commands

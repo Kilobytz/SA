@@ -1,4 +1,10 @@
+database:
+    host:
+    port:
+    database:
+    username:
+    password:
 warps:
 tips:
-users:
 compass:
+perms:

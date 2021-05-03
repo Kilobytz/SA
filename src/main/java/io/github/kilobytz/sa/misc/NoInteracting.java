@@ -15,14 +15,15 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.ranks.RankManager;
+import io.github.kilobytz.sa.players.PlayerManager;
+import io.github.kilobytz.sa.players.PracPlayer;
 
 public class NoInteracting implements Listener {
 
-    RankManager rM;
+    PlayerManager rM;
     SA main;
 
-    public void setRanks(RankManager rM, SA main) {
+    public void setRanks(PlayerManager rM, SA main) {
         this.rM = rM;
         this.main = main;
       }
@@ -30,7 +31,7 @@ public class NoInteracting implements Listener {
     @EventHandler
     public void onHangingHit(HangingBreakByEntityEvent event) {
             if(event.getRemover() instanceof Player) {
-                if (this.rM.doesPlayerHaveRank((Player) event.getRemover())) {
+                if ((rM.getPlayerInst((Player)event.getRemover())).hasRank()) {
                    event.setCancelled(false);
                    return;
                 }
@@ -42,7 +43,7 @@ public class NoInteracting implements Listener {
     public void hangDamage(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof Hanging || event.getEntity() instanceof ArmorStand) {
             if(event.getDamager() instanceof Player) {
-                if (this.rM.doesPlayerHaveRank((Player)event.getDamager())) {
+                if ((rM.getPlayerInst((Player)event.getDamager())).hasRank()) {
                     return;
                 }
             }
@@ -52,7 +53,7 @@ public class NoInteracting implements Listener {
 
     @EventHandler
     public void armorStandInteract(PlayerArmorStandManipulateEvent event) {
-        if(this.rM.doesPlayerHaveRank(event.getPlayer())) {
+        if((rM.getPlayerInst(event.getPlayer())).hasRank()) {
             return;
         }
         event.setCancelled(true);
@@ -61,7 +62,7 @@ public class NoInteracting implements Listener {
     @EventHandler
     public void hungChange(PlayerInteractEntityEvent event) {
         if(event.getRightClicked() instanceof ItemFrame || event.getRightClicked() instanceof ArmorStand) {
-            if (this.rM.doesPlayerHaveRank(event.getPlayer())) {
+            if ((rM.getPlayerInst(event.getPlayer())).hasRank()) {
                 return;
             }
             event.setCancelled(true);  
@@ -79,7 +80,7 @@ public class NoInteracting implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if(event.hasBlock()) {
-            if (!this.rM.doesPlayerHaveRank(event.getPlayer())) {
+            if (!(rM.getPlayerInst(event.getPlayer())).hasRank()) {
                 if (event.getClickedBlock().getType() == Material.DISPENSER || event.getClickedBlock().getType() == Material.ANVIL ||
                  event.getClickedBlock().getType() == Material.BEACON || event.getClickedBlock().getType() == Material.FURNACE ||
                  event.getClickedBlock().getType() == Material.FLOWER_POT) {

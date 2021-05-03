@@ -3,20 +3,20 @@ package io.github.kilobytz.sa;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
-import io.github.kilobytz.sa.command.Rank;
+import io.github.kilobytz.sa.command.RankCom;
 import io.github.kilobytz.sa.command.SetWarp;
 import io.github.kilobytz.sa.command.Spawn;
 import io.github.kilobytz.sa.command.SpawnShulkerBoss;
@@ -30,22 +30,21 @@ import io.github.kilobytz.sa.entities.ShulkerBoss;
 import io.github.kilobytz.sa.misc.CompassWarp;
 import io.github.kilobytz.sa.misc.Grapple;
 import io.github.kilobytz.sa.misc.KittyDrugs;
-import io.github.kilobytz.sa.misc.Mushroom;
 import io.github.kilobytz.sa.misc.NoInteracting;
 import io.github.kilobytz.sa.misc.Pistons;
-import io.github.kilobytz.sa.misc.Reflection;
-import io.github.kilobytz.sa.misc.Reflection.FieldAccessor;
-import io.github.kilobytz.sa.misc.Reflection.MethodInvoker;
-import io.github.kilobytz.sa.ranks.RankListener;
-import io.github.kilobytz.sa.ranks.RankManager;
+import io.github.kilobytz.sa.players.PlayerManager;
+import io.github.kilobytz.sa.players.PlayerListener;
 import io.github.kilobytz.sa.tips.TipManager;
+import net.minecraft.server.v1_12_R1.Entity;
+import net.minecraft.server.v1_12_R1.EntityShulker;
+import net.minecraft.server.v1_12_R1.EntityTypes;
+import net.minecraft.server.v1_12_R1.MinecraftKey;
 
 
 public class SA extends JavaPlugin {
 
-
+    GlobalValues values = new GlobalValues();
     WarpHandling wH = new WarpHandling(this);
-    CollisionManager cM = new CollisionManager();
     EntityManager eM = new EntityManager();
     NoInteracting pNH = new NoInteracting();
     Warp warp = new Warp();
@@ -57,21 +56,24 @@ public class SA extends JavaPlugin {
     SpawnShulkerBoss sBoss = new SpawnShulkerBoss();
     TipManager tM = new TipManager(this);
     Tip tip = new Tip();
-    Rank rank = new Rank();
+    RankCom rank = new RankCom();
     Pistons pst = new Pistons();
-    RankListener rL = new RankListener();
-    RankManager rM = new RankManager(this);
+    PlayerListener pL = new PlayerListener();
+    PlayerManager pM = new PlayerManager(this);
     Grapple grapple = new Grapple(this);
+    CollisionManager cM = new CollisionManager(pM);
     CompassWarp cWarp = new CompassWarp(this,wH);
     KittyDrugs crack = new KittyDrugs();
     boolean delayLogin = true;
 
-    private MethodInvoker a1 = Reflection.getMethod("{nms}.Block", "a", SoundEffectType.class);
-    private MethodInvoker c1 = Reflection.getMethod("{nms}.Block", "c", float.class);
+    String host, port, database, username, password;
+
+    public static Connection connection;
 
 
     @Override
     public void onEnable() {
+        setSQL();
         createConfig();
         registerListeners();
         registerCommands();
@@ -80,15 +82,22 @@ public class SA extends JavaPlugin {
         startTips();
         setPermMessages();
         loginDelay();
-        Block mushroom = (new Mushroom());
-        a1.invoke(mushroom, SoundEffectType.c);
-        c1.invoke(mushroom, 0.0F);
-        mushroom.c("mushroom");
     }
 
     @Override
     public void onDisable() {
+        
+        
+    }
 
+    public void setSQL() {
+        try{
+            host = (this.getConfig().get("database." + "host")).toString();
+            port = (this.getConfig().get("database." + "port")).toString();
+            database = (this.getConfig().get("database." + "database")).toString();
+            username = (this.getConfig().get("database." + "username")).toString();
+            password = (this.getConfig().get("database." + "password")).toString();
+        }catch(NullPointerException e) {}
     }
 
     public void registerCommands() {
@@ -120,7 +129,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.cM, this);
         pluginManager.registerEvents(this.eM, this);
         pluginManager.registerEvents(this.pNH, this);
-        pluginManager.registerEvents(this.rL, this);
+        pluginManager.registerEvents(this.pL, this);
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
         pluginManager.registerEvents(this.cWarp, this);
@@ -132,11 +141,23 @@ public class SA extends JavaPlugin {
         setWarp.setup(wH);
         delWarp.setup(wH);
         tip.setTipData(tM);
-        rL.setRanks(rM,this);
-        rank.setRankData(rM);
-        pNH.setRanks(rM, this);
+        pL.setRanks(pM,this);
+        rank.setRankData(pM);
+        pNH.setRanks(pM, this);
 
     }
+
+    public void openConnection() throws SQLException, ClassNotFoundException {
+        if (connection != null && !connection.isClosed()) {
+            return;
+        }
+        Class.forName("com.mysql.jdbc.Driver");
+        connection = DriverManager.getConnection("jdbc:mysql://"
+                + this.host + ":" + this.port + "/" + this.database,
+                this.username, this.password);
+    }
+
+
 
     public void startTips() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {

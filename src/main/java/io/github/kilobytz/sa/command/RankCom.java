@@ -2,6 +2,7 @@ package io.github.kilobytz.sa.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,15 +14,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import io.github.kilobytz.sa.ranks.RankManager;
+import io.github.kilobytz.sa.GlobalValues;
+import io.github.kilobytz.sa.players.PlayerManager;
 
-public class Rank implements TabExecutor {
+public class RankCom implements TabExecutor {
 
-    RankManager rM;
+    PlayerManager rM;
     HashMap<String,String> rankCommands = new HashMap<>();
+    List<String> ranksList = new LinkedList<String>();
 
 
-    public void setRankData(RankManager rM) {
+    public void setRankData(PlayerManager rM) {
         this.rM=rM;
         setRankCommands();
     }
@@ -61,7 +64,7 @@ public class Rank implements TabExecutor {
                             sender.sendMessage("Invalid player name." + ChatColor.RED);
                             return true;
                         }
-                        if(!rM.removeRanks(Bukkit.getPlayer(args[1].toLowerCase()))) {
+                        if(!rM.removeRank(Bukkit.getPlayer(args[1].toLowerCase()))) {
                             sender.sendMessage("Error. Ranks not found." + ChatColor.RED);
                         }
                         else {
@@ -78,7 +81,7 @@ public class Rank implements TabExecutor {
                             sender.sendMessage("Invalid player name." + ChatColor.RED);
                             return true;
                         }
-                        if(!rM.setRank(args[1].toLowerCase(),args[2].toLowerCase())) {
+                        if(!rM.setRank(Bukkit.getPlayer(args[1].toLowerCase()),args[2].toLowerCase())) {
                             sender.sendMessage("Error. Player already has a rank." + ChatColor.RED);
                         }
                         else {
@@ -95,6 +98,9 @@ public class Rank implements TabExecutor {
         return false;
     }
     public void setRankCommands() {
+        ranksList.add(GlobalValues.builderName);
+        ranksList.add(GlobalValues.adminName);
+        ranksList.add(GlobalValues.ownerName);
         rankCommands.put("add","/rank add <username> <rank>. Sets a user's rank.");
         rankCommands.put("remove","/rank remove <username>. Removes a user's rank.");
     }
@@ -106,7 +112,7 @@ public class Rank implements TabExecutor {
     }
 
     public boolean checkRankName(String name) {
-        for(String rankName : rM.getRanksList()) {
+        for(String rankName : ranksList) {
             if(rankName.equalsIgnoreCase(name)) {
                 return true;
             }
@@ -122,6 +128,7 @@ public class Rank implements TabExecutor {
         }
         return false;
     }
+
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -146,13 +153,13 @@ public class Rank implements TabExecutor {
                 ArrayList<String> ranks = new ArrayList<>();
                 if(args[0].equalsIgnoreCase("add")) {
                     if (!args[2].equals("")) {
-                        for (String entry : rM.getRanksList()) {
+                        for (String entry : ranksList) {
                             if (entry.toLowerCase().startsWith(args[2].toLowerCase())) {
                                 ranks.add(entry.toLowerCase());
                             }
                         }
                     } else {
-                        for (String entry : rM.getRanksList()) {
+                        for (String entry : ranksList) {
                             ranks.add(entry.toLowerCase());
                         }
                     }
