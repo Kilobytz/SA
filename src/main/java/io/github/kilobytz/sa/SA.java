@@ -6,39 +6,41 @@ import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
+import io.github.kilobytz.sa.command.Muteall;
+import io.github.kilobytz.sa.command.OpenEnderChest;
+import io.github.kilobytz.sa.command.PersonalSpawnpoint;
+import io.github.kilobytz.sa.command.PvPToggle;
 import io.github.kilobytz.sa.command.RankCom;
 import io.github.kilobytz.sa.command.SetWarp;
 import io.github.kilobytz.sa.command.Spawn;
-import io.github.kilobytz.sa.command.SpawnShulkerBoss;
 import io.github.kilobytz.sa.command.Suicide;
 import io.github.kilobytz.sa.command.Tip;
 import io.github.kilobytz.sa.command.Warp;
-import io.github.kilobytz.sa.commandfunctions.CollisionManager;
-import io.github.kilobytz.sa.commandfunctions.WarpHandling;
+import io.github.kilobytz.sa.command.WorldTP;
 import io.github.kilobytz.sa.entities.EntityManager;
-import io.github.kilobytz.sa.entities.ShulkerBoss;
-import io.github.kilobytz.sa.misc.CompassWarp;
+import io.github.kilobytz.sa.misc.CollisionManager;
 import io.github.kilobytz.sa.misc.Grapple;
-import io.github.kilobytz.sa.misc.KittyDrugs;
 import io.github.kilobytz.sa.misc.NoInteracting;
 import io.github.kilobytz.sa.misc.Pistons;
-import io.github.kilobytz.sa.players.PlayerManager;
+import io.github.kilobytz.sa.misc.WorldListener;
+import io.github.kilobytz.sa.misc.WorldLoader;
 import io.github.kilobytz.sa.players.PlayerListener;
+import io.github.kilobytz.sa.players.PlayerManager;
 import io.github.kilobytz.sa.tips.TipManager;
-import net.minecraft.server.v1_12_R1.Entity;
-import net.minecraft.server.v1_12_R1.EntityShulker;
-import net.minecraft.server.v1_12_R1.EntityTypes;
-import net.minecraft.server.v1_12_R1.MinecraftKey;
+import io.github.warping.CompassWarp;
+import io.github.warping.WarpHandling;
 
 
 public class SA extends JavaPlugin {
@@ -51,9 +53,10 @@ public class SA extends JavaPlugin {
     SetWarp setWarp = new SetWarp();
     DelWarp delWarp = new DelWarp();
     Suicide suicide = new Suicide();
+    PersonalSpawnpoint sps = new PersonalSpawnpoint();
+    OpenEnderChest eC = new OpenEnderChest();
     Spawn spawn = new Spawn();
     Heal heal = new Heal();
-    SpawnShulkerBoss sBoss = new SpawnShulkerBoss();
     TipManager tM = new TipManager(this);
     Tip tip = new Tip();
     RankCom rank = new RankCom();
@@ -63,8 +66,15 @@ public class SA extends JavaPlugin {
     Grapple grapple = new Grapple(this);
     CollisionManager cM = new CollisionManager(pM);
     CompassWarp cWarp = new CompassWarp(this,wH);
-    KittyDrugs crack = new KittyDrugs();
     boolean delayLogin = true;
+    boolean firstLogin = false;
+    Muteall muteall = new Muteall();
+    PvPToggle pvpTog = new PvPToggle();
+    WorldLoader wLo = new WorldLoader();
+    WorldTP wTP = new WorldTP();
+    WorldListener wLi = new WorldListener();
+
+    boolean dbOn = false;
 
     String host, port, database, username, password;
 
@@ -73,21 +83,22 @@ public class SA extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        setSQL();
         createConfig();
+        setSQL();
         registerListeners();
         registerCommands();
         classSetups();
-        CustomEntities.registerEntities();
-        startTips();
+        tM.startTips();
         setPermMessages();
         loginDelay();
+        tM.loadTips();
+        wH.loadWarps();
     }
 
     @Override
     public void onDisable() {
-        
-        
+        wH.saveWarps();
+        tM.saveTips();
     }
 
     public void setSQL() {
@@ -97,19 +108,30 @@ public class SA extends JavaPlugin {
             database = (this.getConfig().get("database." + "database")).toString();
             username = (this.getConfig().get("database." + "username")).toString();
             password = (this.getConfig().get("database." + "password")).toString();
-        }catch(NullPointerException e) {}
+            dbOn = true;
+        }catch(NullPointerException e) {
+            getLogger().info("No Database found, some things may not be saved.");
+        }
     }
 
     public void registerCommands() {
         this.getCommand("warp").setExecutor(this.warp);
         this.getCommand("setwarp").setExecutor(this.setWarp);
         this.getCommand("delwarp").setExecutor(this.delWarp);
-        this.getCommand("ded").setExecutor(this.suicide);
+        this.getCommand("suicide").setExecutor(this.suicide);
+        this.getCommand("setpersonalspawnpoint").setExecutor(this.sps);
+        this.getCommand("enderchest").setExecutor(this.eC);
         this.getCommand("spawn").setExecutor(this.spawn);
         this.getCommand("heal").setExecutor(this.heal);
-        this.getCommand("spawnboss").setExecutor(this.sBoss);
         this.getCommand("tip").setExecutor(this.tip);
         this.getCommand("rank").setExecutor(this.rank);
+        this.getCommand("muteall").setExecutor(this.muteall);
+        this.getCommand("pvptoggle").setExecutor(this.pvpTog);
+        this.getCommand("worldtp").setExecutor(this.wTP);
+    }
+
+    public boolean hasFirstLoad() {
+        return firstLogin;
     }
 
     public void setPermMessages() {
@@ -117,11 +139,15 @@ public class SA extends JavaPlugin {
         this.getCommand("warp").setPermissionMessage(ob);
         this.getCommand("setwarp").setPermissionMessage(ob);
         this.getCommand("delwarp").setPermissionMessage(ob);
-        this.getCommand("ded").setPermissionMessage(ob);
+        this.getCommand("suicide").setPermissionMessage(ob);
+        this.getCommand("setpersonalspawnpoint").setPermissionMessage(ob);
+        this.getCommand("enderchest").setPermissionMessage(ob);
         this.getCommand("spawn").setPermissionMessage(ob);
         this.getCommand("heal").setPermissionMessage(ob);
-        this.getCommand("spawnboss").setPermissionMessage(ob);
         this.getCommand("tip").setPermissionMessage(ob);
+        this.getCommand("muteall").setPermissionMessage(ob);
+        this.getCommand("pvptoggle").setPermissionMessage(ob);
+        this.getCommand("worldtp").setPermissionMessage(ob);
     }
 
     public void registerListeners() {
@@ -133,7 +159,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
         pluginManager.registerEvents(this.cWarp, this);
-        pluginManager.registerEvents(this.crack, this);   
+        pluginManager.registerEvents(this.cWarp, this);
     }
 
     public void classSetups() {
@@ -144,10 +170,16 @@ public class SA extends JavaPlugin {
         pL.setRanks(pM,this);
         rank.setRankData(pM);
         pNH.setRanks(pM, this);
-
+        muteall.setup(pL);
+        pvpTog.setup(pNH);
+        wTP.setup(wLo);
+        wLi.setInfo(wH, this);
     }
 
     public void openConnection() throws SQLException, ClassNotFoundException {
+        if(!dbOn){
+            throw new NumberFormatException();
+        }
         if (connection != null && !connection.isClosed()) {
             return;
         }
@@ -157,20 +189,8 @@ public class SA extends JavaPlugin {
                 this.username, this.password);
     }
 
-
-
-    public void startTips() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-
-            @Override
-            public void run() {
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    if(tM.numOfTips() != 0) {
-                        p.sendMessage(ChatColor.DARK_PURPLE + "TIP: " + tM.getTip());
-                    }
-                }
-            }
-        },50L, 3000);
+    public boolean isDbOn(){
+        return dbOn;
     }
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
@@ -195,58 +215,6 @@ public class SA extends JavaPlugin {
 
     public boolean getDelayLogin() {
         return delayLogin;
-    }
-
-    public enum CustomEntities {
-
-        SHULKERBOSS("Corrupted Ice", 69, EntityType.SHULKER, EntityShulker.class, ShulkerBoss.class);
-
-        private String name;
-        private int id;
-        private EntityType entityType;
-        private Class<? extends Entity> nmsClass;
-        private Class<? extends Entity> customClass;
-        private MinecraftKey key;
-        private MinecraftKey oldKey;
-
-        private CustomEntities(String name, int id, EntityType entityType, Class<? extends Entity> nmsClass, Class<? extends Entity> customClass) {
-            this.name = name;
-            this.id = id;
-            this.entityType = entityType;
-            this.nmsClass = nmsClass;
-            this.customClass = customClass;
-            this.key = new MinecraftKey(name);
-            this.oldKey = EntityTypes.b.b(nmsClass);
-        }
-
-        public static void registerEntities() { for (CustomEntities ce : CustomEntities.values()) ce.register(); }
-        public static void unregisterEntities() { for (CustomEntities ce : CustomEntities.values()) ce.unregister(); }
-
-        private void register() {
-            EntityTypes.d.add(key);
-            EntityTypes.b.a(id, key, customClass);
-        }
-
-        private void unregister() {
-            EntityTypes.d.remove(key);
-            EntityTypes.b.a(id, oldKey, nmsClass);
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getID() {
-            return id;
-        }
-
-        public EntityType getEntityType() {
-            return entityType;
-        }
-
-        public Class<?> getCustomClass() {
-            return customClass;
-        }
     }
 
 

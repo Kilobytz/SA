@@ -1,15 +1,15 @@
 package io.github.kilobytz.sa.command;
 
-import io.github.kilobytz.sa.commandfunctions.WarpHandling;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.github.warping.WarpHandling;
 
 public class DelWarp implements TabExecutor {
 
@@ -32,8 +32,7 @@ public class DelWarp implements TabExecutor {
                         return true;
                     }
                     if (length == 1){
-                        Location loc = warpHandling.getLocationFromWarp(args[0]);
-                        if(loc != null) {
+                        if(warpHandling.checkWarp(args[0])) {
                             warpHandling.delWarp(args[0]);
                             playerSent.sendMessage(String.format("%sWarp " + args[0] + " deleted.",ChatColor.GREEN));
                             return true;
@@ -58,7 +57,7 @@ public class DelWarp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("delwarp")) {
             if (args.length == 1) {
                 ArrayList<String> fill = new ArrayList<>();
-                List<String> warps = warpHandling.getAllWarps();
+                List<String> warps = warpHandling.getAllWarpNames();
                     if (!args[0].equals("")) {
                         for (String entry : warps) {
                             String tempEntry = entry;

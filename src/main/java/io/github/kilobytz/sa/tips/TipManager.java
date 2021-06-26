@@ -1,9 +1,17 @@
 package io.github.kilobytz.sa.tips;
 
 import io.github.kilobytz.sa.SA;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -12,89 +20,129 @@ public class TipManager {
 
     SA main;
 
+    List<String> tipsList = new ArrayList<String>();
+    List<String> tipsToDelete = new ArrayList<String>();
+    List<String> blacklistedTips = new ArrayList<String>();
+
     public TipManager(SA main) {
         this.main = main;
     }
 
+    public void startTips() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable() {
+
+            @Override
+            public void run() {
+                String tipToPrint = getTip();
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    p.sendMessage(ChatColor.DARK_PURPLE + "TIP: " + tipToPrint);
+                }
+                blacklistTip(tipToPrint);
+            }
+        },50L, 3000);
+    }
+
+    public void blacklistTip(String tip) {
+        if(blacklistedTips.size() > 3) {
+            blacklistedTips.remove(0);
+        }
+        blacklistedTips.add(tip);
+    }
+
     public void setTip(String tip) {
-        main.getConfig().set("tips."+(numOfTips()+1), tip);
-        main.saveConfig();
+        if(tipsList.contains(tip)){
+            tipsList.set(tipsList.indexOf(tip), tip);
+            return;
+        }
+        tipsList.add(tip);
     }
 
     public void delTip(int tipNum) {
-        if(main.getConfig().get("tips."+(tipNum+1)) == null) {
-            main.getConfig().set("tips."+tipNum,null);
-            main.saveConfig();
-            return;
+        tipsToDelete.add(tipsList.get(tipNum));
+        tipsList.remove(tipNum);
+    }
+
+    public boolean isTipNumberValid(int num){
+        try{
+            tipsList.get(num);
+            return true;
         }
-        reshuffle(tipNum,numOfTips());
-        main.saveConfig();
+        catch(IndexOutOfBoundsException e) {
+            return false;
+        }
     }
 
     public String getTip() {
-        List<String> tips = new LinkedList<>();
-        try {
-            for (String key : main.getConfig().getConfigurationSection("tips").getKeys(false)) {
-                tips.add(key);
+        boolean tipValid = false;
+        while(!tipValid){
+            if(tipsList.size() != 0){
+                Random random = new Random();
+                String tip = tipsList.get((random.nextInt(tipsList.size())));
+                if(blacklistedTips.contains(tip)){
+                    continue;
+                }
+                return tip;
             }
-            Random random = new Random();
-            String message = (String) main.getConfig().get("tips."+((random.nextInt(numOfTips() - 1 + 1) + 1)));
-            return message;
-        } catch (NullPointerException e) {
             return null;
         }
-    }
-
-    public String getTipSpec(int num) {
-        List<String> tips = new LinkedList<>();
-        try {
-            for (String key : main.getConfig().getConfigurationSection("tips").getKeys(false)) {
-                tips.add(key);
-            }
-            String message = (String) main.getConfig().get("tips."+num);
-            return message;
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-
-    public int numOfTips() {
-        List<String> tips = new LinkedList<>();
-        try {
-            for (String key : main.getConfig().getConfigurationSection("tips").getKeys(false)) {
-                tips.add(key);
-            }
-            return tips.size();
-        } catch (NullPointerException e) {
-            return 0;
-        }
+        return null;
+        
     }
 
     public void listTips(CommandSender sender) {
-        int roll = 0;
-        try {
-            while (roll < numOfTips()) {
-                sender.sendMessage(Integer.toString(roll + 1) + " : " + getTipSpec(roll+1));
-                ++roll;
-            }
-            if(roll == 0) {
-                sender.sendMessage(ChatColor.RED + "There are no tips added.");
-            }
-        }catch (NullPointerException e) {
+        if(tipsList.size() == 0) {
             sender.sendMessage(ChatColor.RED + "There are no tips added.");
+            return;
         }
-
+        for(String tip : tipsList){
+            sender.sendMessage(Integer.toString(tipsList.indexOf(tip)) + " : " + tip);
+        }
     }
 
-
-    public void reshuffle(int num,int max) {
-        int base = num;
-        while(num < max) {
-
-            main.getConfig().set("tips."+base,main.getConfig().get("tips."+(base+1)));
-            ++base;
+    public void loadTips() {
+        try {
+            main.openConnection();
+            Statement statement = SA.connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM tips;");{
+            while(rs.next()) {
+                tipsList.add(rs.getString(1));
+                }
+            }
+            statement.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+      
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            main.getLogger().info("No Database found, tip loading failed.");
         }
-        main.getConfig().set("tips."+max,null);
+    }
+
+    public void saveTips(){
+        try {
+            main.openConnection();
+            String insertString = "INSERT INTO tips (message) VALUES (?) ON DUPLICATE KEY UPDATE message = ?";
+            String deleteString = "DELETE FROM tips WHERE message = ?";
+            for(String tip : tipsList) {
+                PreparedStatement preppedInsert = SA.connection.prepareStatement(insertString);
+                preppedInsert.setString(1, tip);
+                preppedInsert.setString(2, tip);
+                preppedInsert.executeUpdate();
+            }
+            for(String tip : tipsToDelete) {
+                PreparedStatement preppedDelete = SA.connection.prepareStatement(deleteString);
+                preppedDelete.setString(1, tip);
+                preppedDelete.executeUpdate();
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+      
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            main.getLogger().info("No Database found, tip saving failed.");
+        } 
     }
 
 }

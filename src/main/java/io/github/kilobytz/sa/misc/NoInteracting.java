@@ -1,7 +1,10 @@
 package io.github.kilobytz.sa.misc;
 
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -10,18 +13,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.players.PlayerManager;
-import io.github.kilobytz.sa.players.PracPlayer;
 
 public class NoInteracting implements Listener {
 
     PlayerManager rM;
     SA main;
+    boolean pvp = false;
 
     public void setRanks(PlayerManager rM, SA main) {
         this.rM = rM;
@@ -88,5 +95,38 @@ public class NoInteracting implements Listener {
                 }
             }
         }
+    }
+    @EventHandler
+    public void onChestClose(InventoryCloseEvent event) {
+        if(event.getInventory().getType().equals(InventoryType.CHEST)) {
+            for(ItemStack i : event.getInventory().getContents()) {
+                if(i != null) {
+                    return;
+                }
+            }
+            if(((Block)event.getInventory().getLocation().getBlock()).getType().equals(Material.TRAPPED_CHEST)) {
+                ((Block)event.getInventory().getLocation().getBlock()).setType(Material.AIR);
+            }
+        }
+    }
+
+    @EventHandler
+    public void checkPvP(EntityDamageByEntityEvent event) {
+        if(event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow) && !pvp) {
+            event.setCancelled(true);
+            return;
+        }
+    }
+
+    @EventHandler
+    public void loginAttkSpd(PlayerJoinEvent event) {
+        event.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(200.0);
+    }
+
+    public void togglePvP() {
+        pvp = !pvp;
+    }
+    public boolean getPvPStatus() {
+        return pvp;
     }
 }

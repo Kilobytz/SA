@@ -50,13 +50,6 @@ public class RankCom implements TabExecutor {
                 }
 
                 boolean nameValid = checkPlayerName(args[1]);
-                boolean rankValid = false;
-
-                if(args.length == 3) {
-                    rankValid = checkRankName(args[2]);
-                }
-
-
                 switch (args[0]) {
 
                     case "remove" :
@@ -73,16 +66,12 @@ public class RankCom implements TabExecutor {
                         return true;
 
                     case "add" :
-                        if(rankValid == false) {
-                            sender.sendMessage("Invalid rank name." + ChatColor.RED);
-                            return true;
-                        }
                         if(nameValid == false) {
                             sender.sendMessage("Invalid player name." + ChatColor.RED);
                             return true;
                         }
                         if(!rM.setRank(Bukkit.getPlayer(args[1].toLowerCase()),args[2].toLowerCase())) {
-                            sender.sendMessage("Error. Player already has a rank." + ChatColor.RED);
+                            sender.sendMessage("Invalid rank name." + ChatColor.RED);
                         }
                         else {
                             sender.sendMessage("Rank added!." + ChatColor.GREEN);
@@ -98,6 +87,7 @@ public class RankCom implements TabExecutor {
         return false;
     }
     public void setRankCommands() {
+        ranksList.add(GlobalValues.donatorName);
         ranksList.add(GlobalValues.builderName);
         ranksList.add(GlobalValues.adminName);
         ranksList.add(GlobalValues.ownerName);

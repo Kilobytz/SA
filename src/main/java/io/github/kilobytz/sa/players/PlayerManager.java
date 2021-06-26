@@ -6,9 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.mysql.jdbc.Statement;
-
 import org.bukkit.entity.Player;
+
 import io.github.kilobytz.sa.GlobalValues;
 import io.github.kilobytz.sa.SA;
 
@@ -35,10 +34,15 @@ public class PlayerManager {
         players.add(player);
     }
 
-
+    public void removePlayer(PracPlayer player) {
+        players.remove(player);
+    }
 
     public boolean setRank(Player player, String rank) {
         if(rankNameValid(rank)) {
+            if(getPlayerInst(player).hasRank()) {
+                getPlayerInst(player).getRank().remove(main, player);
+            }
             getPlayerInst(player).setRankInitial(main,rank);
             return true;
         }
@@ -48,6 +52,7 @@ public class PlayerManager {
     public boolean removeRank(Player player) {
         if(getPlayerInst(player).hasRank()) {
             getPlayerInst(player).getRank().remove(main, player);
+            getPlayerInst(player).removeRank();
             return true;
         }
         return false;
@@ -65,6 +70,7 @@ public class PlayerManager {
     public boolean rankNameValid(String rank){
         rank = rank.substring(0,1).toUpperCase() + rank.substring(1).toLowerCase();
         switch(rank) {
+            case GlobalValues.donatorName :
             case GlobalValues.builderName :
             case GlobalValues.adminName :
             case GlobalValues.ownerName :
@@ -72,22 +78,6 @@ public class PlayerManager {
             default :
             return false;
         }
-    }
-    public String getPlayerRank(Player player) {
-        try {
-            String ID = player.getUniqueId().toString();
-            for (String key : main.getConfig().getConfigurationSection("users").getKeys(false)) {
-                if (key.equalsIgnoreCase(ID)) {
-                    if(!(main.getConfig().get("users." + ID) == null)) {
-                        return (String) main.getConfig().get("users." + key); 
-                    }
-
-                }
-            }
-        }catch(NullPointerException e) {
-            return null;
-        }
-        return null;
     }
 
     
@@ -99,6 +89,7 @@ public class PlayerManager {
         else{
             statement.executeUpdate("INSERT INTO players (uuid, rank) VALUES ('"+ getPlayerInst(player).getID() +"', NULL) ON DUPLICATE KEY UPDATE rank = NULL;");
         }
+        statement.close();
     }
 
 }

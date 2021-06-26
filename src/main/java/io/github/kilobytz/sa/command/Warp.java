@@ -1,11 +1,12 @@
 package io.github.kilobytz.sa.command;
 
-import io.github.kilobytz.sa.commandfunctions.WarpHandling;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+
+import io.github.warping.WarpHandling;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class Warp implements TabExecutor {
                 Player playerSent = (Player) sender;
                     int length = args.length;
                     if (length == 0) {
-                        List<String> allWarps = warpHandling.getAllWarps();
+                        List<String> allWarps = warpHandling.getAllWarpNames();
                         if(allWarps.size() != 0) {
                             String warpString = allWarps.get(0);
                             if(allWarps.size() > 1) {
@@ -66,7 +67,7 @@ public class Warp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("warp")) {
             if (args.length == 1) {
                 ArrayList<String> fill = new ArrayList<>();
-                List<String> warps = warpHandling.getAllWarps();
+                List<String> warps = warpHandling.getAllWarpNames();
                 if (sender.isOp()) {
                     if (!args[0].equals("")) {
                         for (String entry : warps) {

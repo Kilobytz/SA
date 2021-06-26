@@ -1,4 +1,4 @@
-package io.github.kilobytz.sa.commandfunctions;
+package io.github.kilobytz.sa.misc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;

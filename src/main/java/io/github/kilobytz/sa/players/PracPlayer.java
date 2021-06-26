@@ -9,6 +9,7 @@ import io.github.kilobytz.sa.GlobalValues;
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.players.ranks.Admin;
 import io.github.kilobytz.sa.players.ranks.Builder;
+import io.github.kilobytz.sa.players.ranks.Donator;
 import io.github.kilobytz.sa.players.ranks.Owner;
 import io.github.kilobytz.sa.players.ranks.Rank;
 
@@ -36,6 +37,9 @@ public class PracPlayer {
 
     public void setRank(String rank) {
         switch(rank) {
+            case GlobalValues.donatorName :
+                this.rank = new Donator();;
+                return;
             case GlobalValues.builderName :
                 this.rank = new Builder();;
                 return;
@@ -52,6 +56,10 @@ public class PracPlayer {
 
     public Rank getRank() {
         return rank;
+    }
+
+    public void removeRank(){
+        rank = null;
     }
 
     public String getRankName(){

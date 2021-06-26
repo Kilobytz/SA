@@ -1,5 +1,5 @@
 name: SA
-version: 2.5
+version: 2.5.8
 author: Kilobytes
 main:  io.github.kilobytz.sa.SA
 description: Commands for SA dungeon server.
@@ -7,6 +7,9 @@ permissions:
     sa.general:
       description: Gives public commands
       default: true
+    sa.donator:
+      description: Gives donator commands
+      default: op
     sa.warp:
       description: Gives warp commands.
       default: op
@@ -16,8 +19,6 @@ permissions:
     sa.admin:
       description:
       default: op
-
-
 commands:
   heal:
     description: Heals the user to full health.
@@ -25,9 +26,18 @@ commands:
   spawn:
     description: Returns the user to the spawn.
     permission: sa.general
-  ded:
+  suicide:
     description: Kills the user.
+    aliases: ded
     permission: sa.general
+  setpersonalspawnpoint:
+    description: Sets user's spawnpoint.
+    aliases: sps
+    permission: sa.donator
+  enderchest:
+    description: Opens user's Enderchest.
+    aliases: ec
+    permission: sa.donator
   warp:
     description: Warps the user to the designated warp.
     permission: sa.warp
@@ -46,3 +56,12 @@ commands:
   rank:
     description: Edits ranks.
     permission: sa.admin
+  muteall:
+    description: Mutes all non-ranked players.
+    permission: sa.admin
+  pvptoggle:
+    description: Toggles PvP on and off.
+    permission: sa.admin
+  worldtp:
+    description: Teleports to a secondary world.
+    permission: sa.warp

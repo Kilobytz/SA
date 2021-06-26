@@ -16,14 +16,18 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
 import io.github.kilobytz.sa.SA;
+import io.github.kilobytz.sa.players.ranks.Admin;
+import io.github.kilobytz.sa.players.ranks.Owner;
 
 public class PlayerListener implements Listener {
   PlayerManager pM;
   
   SA main;
- 
+  boolean muted = false;
   
   public void setRanks(PlayerManager pM, SA main) {
     this.pM = pM;
@@ -34,11 +38,25 @@ public class PlayerListener implements Listener {
   @EventHandler
   public void joinEvent(PlayerJoinEvent event) {
     pM.setConfPerms(event.getPlayer());
-    event.getPlayer().setGameMode(GameMode.ADVENTURE);
+    if(!pM.getPlayerInst(event.getPlayer()).hasRank()) {
+      event.getPlayer().setGameMode(GameMode.ADVENTURE);
+    }
+  }
+
+  public void toggleMute() {
+    muted = !muted;
+  }
+
+  public boolean getMuteStatus() {
+    return muted;
   }
 
   @EventHandler
   public void playerChat(AsyncPlayerChatEvent event) {
+    if(!pM.getPlayerInst(event.getPlayer()).hasRank() && muted) {
+      event.setCancelled(true);
+      return;
+    }
     String msg = event.getMessage();
     event.setCancelled(true);
     String nameSec;
@@ -70,21 +88,26 @@ public class PlayerListener implements Listener {
     if(pM.getPlayerInst(event.getPlayer()).hasRank()) {
       pM.getPlayerInst(event.getPlayer()).getRank().setPerms(main, event.getPlayer());
     }
+    if((pM.getPlayerInst(event.getPlayer()).getRank() instanceof Admin || pM.getPlayerInst(event.getPlayer()).getRank() instanceof Owner)|| !main.isDbOn()) {
+      return;
+    }
+    event.getPlayer().setOp(false);
   }
-  
 
   @EventHandler
   public void playerLeave(PlayerQuitEvent event) {
     try {
+      main.getLogger().info(event.getPlayer().getName());
       main.openConnection();
       Statement statement = SA.connection.createStatement();
-      pM.savePlayers(statement,event.getPlayer());       
+      pM.savePlayers(statement,event.getPlayer());     
   } catch (ClassNotFoundException e) {
       e.printStackTrace();
   } catch (SQLException e) {
 
       e.printStackTrace();
-  }
+  } catch (NumberFormatException e) {}
+  pM.removePlayer(pM.getPlayerInst(event.getPlayer()));
   }
   
 
@@ -99,7 +122,8 @@ public class PlayerListener implements Listener {
   } catch (SQLException e) {
 
       e.printStackTrace();
-  }
+  } catch (NumberFormatException e) {}
+  pM.removePlayer(pM.getPlayerInst(event.getPlayer()));
   }
 
   @EventHandler
@@ -125,12 +149,15 @@ public class PlayerListener implements Listener {
           pM.addPlayer(new PracPlayer(event.getUniqueId(),"NULL"));
         }
       }
+      statement.close();
   } catch (ClassNotFoundException e) {
       e.printStackTrace();
   } catch (SQLException e) {
-
       e.printStackTrace();
+  } catch (NumberFormatException e) {
+    pM.addPlayer(new PracPlayer(event.getUniqueId(),"NULL"));
   }
+
   }
  
   

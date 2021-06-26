@@ -17,7 +17,7 @@ public class Suicide implements TabExecutor {
                              String[] args) {
 
 
-        if (command.getName().equalsIgnoreCase("ded")) {
+        if (command.getName().equalsIgnoreCase("suicide")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
                 playerSent.setHealth(0);
@@ -31,7 +31,7 @@ public class Suicide implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (command.getName().equalsIgnoreCase("ded")) {
+        if (command.getName().equalsIgnoreCase("suicide")) {
             return new ArrayList<>();
         }
         return null;

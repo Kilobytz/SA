@@ -21,8 +21,8 @@ public class Admin extends Rank{
     @Override
     public void setPerms(SA main, Player player) {
         setName(player);
-        if(!player.isOp()) {
-           player.setOp(true);
+        if(!player.isOp()){
+            player.setOp(true);
         }
         player.addAttachment(main, "minecraft.command.op", false);
         player.addAttachment(main, "minecraft.command.deop",false);

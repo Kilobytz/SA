@@ -21,7 +21,9 @@ public class Owner extends Rank{
     @Override
     public void setPerms(SA main, Player player) {
         setName(player);
-        player.setOp(true);
+        if(!player.isOp()){
+            player.setOp(true);
+        }
     }
     
 }

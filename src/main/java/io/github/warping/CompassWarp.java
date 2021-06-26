@@ -1,6 +1,8 @@
-package io.github.kilobytz.sa.misc;
+package io.github.warping;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -16,19 +18,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.commandfunctions.WarpHandling;
+import io.github.warping.gui.ButtonType;
+import io.github.warping.gui.GUIButton;
 
 
 public class CompassWarp implements Listener{ 
 
     SA main;
     WarpHandling warpHandling;
+    List<String> warpOrder = new LinkedList<String>();
+    int lines;
 
     public CompassWarp(SA main, WarpHandling warpHandling) {
         this.main = main;
         this.warpHandling = warpHandling;        
     }
-
 
 
     @EventHandler
@@ -54,7 +58,7 @@ public class CompassWarp implements Listener{
 
 
 
-    @EventHandler
+    /*@EventHandler
     public void itemClick (InventoryClickEvent event) {
         if(event.getInventory().getTitle().equalsIgnoreCase("warps")
         || event.getInventory().getTitle().equalsIgnoreCase("warp editor")
@@ -150,7 +154,7 @@ public class CompassWarp implements Listener{
             }
             event.setCancelled(true);
         }
-    }
+    }*/
 
     public Inventory warper() {
         int lines = (int) main.getConfig().get("compass." + "lines");
@@ -188,7 +192,19 @@ public class CompassWarp implements Listener{
 
     }
 
-    public Inventory warpSetter() {
+    public Inventory warpSetter(){
+        Inventory warpInv = Bukkit.createInventory(null, (9 +(lines*9)),"Warp Editor");
+        if(lines == 5) {
+            new GUIButton(ButtonType.ADDLINE, warpInv, 3, "At max lines.");
+        }
+        else {
+            new GUIButton(ButtonType.ADDLINE, warpInv, 3, "Add new line.");
+        }
+        
+        return null;
+    }
+
+    public Inventory warpSetterOLD() {
         int lines = (int) main.getConfig().get("compass." + "lines");
         Inventory warpInv = Bukkit.createInventory(null, (9 +(lines*9)),"Warp Editor");
 
@@ -248,7 +264,7 @@ public class CompassWarp implements Listener{
         return warpInv;
     }
 
-    public Inventory addWarps(int invSlot, int page) {
+    public Inventory addWarpsOLD(int invSlot, int page) {
         Inventory warpAdd = Bukkit.createInventory(null, 54,"Warp Add");
 
         ItemStack reverse = new ItemStack(Material.BARRIER, 1);

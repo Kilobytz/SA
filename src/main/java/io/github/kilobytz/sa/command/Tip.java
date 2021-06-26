@@ -61,9 +61,15 @@ public class Tip implements TabExecutor {
                             return true;
                         }
                         try{
-                            tM.delTip(Integer.parseInt(args[1]));
-                            sender.sendMessage(ChatColor.GREEN + "Tip deleted!");
-                            return true;
+                            if(tM.isTipNumberValid(Integer.parseInt(args[1]))) {
+                                tM.delTip(Integer.parseInt(args[1]));
+                                sender.sendMessage(ChatColor.GREEN + "Tip deleted!");
+                                return true;
+                            }
+                            else {
+                                sender.sendMessage(ChatColor.RED + "Invalid tip number. /tip remove <tip-number>");
+                                return true; 
+                            }
                         }catch (NumberFormatException e) {
                             sender.sendMessage(ChatColor.RED + "Invalid usage. /tip remove <tip-number>");
                             return true;
