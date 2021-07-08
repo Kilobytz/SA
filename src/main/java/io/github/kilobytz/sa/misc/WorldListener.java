@@ -1,13 +1,9 @@
 package io.github.kilobytz.sa.misc;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
-
 import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.players.PlayerManager;
 import io.github.warping.WarpHandling;
 
 public class WorldListener implements Listener {

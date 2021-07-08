@@ -2,7 +2,6 @@ package io.github.kilobytz.sa.command;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

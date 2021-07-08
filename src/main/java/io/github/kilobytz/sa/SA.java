@@ -9,10 +9,6 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -39,7 +35,6 @@ import io.github.kilobytz.sa.misc.WorldLoader;
 import io.github.kilobytz.sa.players.PlayerListener;
 import io.github.kilobytz.sa.players.PlayerManager;
 import io.github.kilobytz.sa.tips.TipManager;
-import io.github.warping.CompassWarp;
 import io.github.warping.WarpHandling;
 
 
@@ -65,7 +60,6 @@ public class SA extends JavaPlugin {
     PlayerManager pM = new PlayerManager(this);
     Grapple grapple = new Grapple(this);
     CollisionManager cM = new CollisionManager(pM);
-    CompassWarp cWarp = new CompassWarp(this,wH);
     boolean delayLogin = true;
     boolean firstLogin = false;
     Muteall muteall = new Muteall();
@@ -158,8 +152,6 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.pL, this);
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
-        pluginManager.registerEvents(this.cWarp, this);
-        pluginManager.registerEvents(this.cWarp, this);
     }
 
     public void classSetups() {

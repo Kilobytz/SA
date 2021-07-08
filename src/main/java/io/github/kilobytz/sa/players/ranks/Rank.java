@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.Team;
 
 import io.github.kilobytz.sa.SA;
 
-public class Rank {
+public abstract class Rank {
     
 
     ChatColor rankColor;

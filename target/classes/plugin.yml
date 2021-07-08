@@ -1,5 +1,5 @@
 name: SA
-version: 2.5.8
+version: 2.5.9
 author: Kilobytes
 main:  io.github.kilobytz.sa.SA
 description: Commands for SA dungeon server.
