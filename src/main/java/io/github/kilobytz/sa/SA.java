@@ -64,7 +64,7 @@ public class SA extends JavaPlugin {
     boolean firstLogin = false;
     Muteall muteall = new Muteall();
     PvPToggle pvpTog = new PvPToggle();
-    WorldLoader wLo = new WorldLoader();
+    WorldLoader wLo = new WorldLoader(this);
     WorldTP wTP = new WorldTP();
     WorldListener wLi = new WorldListener();
 

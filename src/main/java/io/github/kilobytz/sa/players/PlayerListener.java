@@ -93,7 +93,6 @@ public class PlayerListener implements Listener {
   @EventHandler
   public void playerLeave(PlayerQuitEvent event) {
     try {
-      main.getLogger().info(event.getPlayer().getName());
       main.openConnection();
       Statement statement = SA.connection.createStatement();
       pM.savePlayers(statement,event.getPlayer());     
