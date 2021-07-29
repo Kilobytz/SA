@@ -26,6 +26,8 @@ import io.github.kilobytz.sa.command.Tip;
 import io.github.kilobytz.sa.command.Warp;
 import io.github.kilobytz.sa.command.WorldTP;
 import io.github.kilobytz.sa.entities.EntityManager;
+import io.github.kilobytz.sa.gui.GUIListener;
+import io.github.kilobytz.sa.gui.WarpEditor;
 import io.github.kilobytz.sa.misc.CollisionManager;
 import io.github.kilobytz.sa.misc.Grapple;
 import io.github.kilobytz.sa.misc.NoInteracting;
@@ -67,6 +69,8 @@ public class SA extends JavaPlugin {
     WorldLoader wLo = new WorldLoader(this);
     WorldTP wTP = new WorldTP();
     WorldListener wLi = new WorldListener();
+    GUIListener guiL = new GUIListener();
+
 
     boolean dbOn = false;
 
@@ -152,6 +156,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.pL, this);
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
+        pluginManager.registerEvents(this.guiL, this);
     }
 
     public void classSetups() {
