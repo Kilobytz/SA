@@ -13,7 +13,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
 import io.github.kilobytz.sa.command.Muteall;
@@ -187,6 +186,10 @@ public class SA extends JavaPlugin {
             ((WarpEditManager)object).openFirstEditorPage(player);
         });
         itemReg.setActionObject("warpeditor",WeM);
+        itemReg.registerItem("warper", (player,object) -> {
+            ((WarpEditManager)object).openFirstWarperPage(player);
+        });
+        itemReg.setActionObject("warper",WeM);
     }
 
     public void openConnection() throws SQLException, ClassNotFoundException {
@@ -206,6 +209,9 @@ public class SA extends JavaPlugin {
         return dbOn;
     }
 
+    public void warpDelete(String warpName){
+        WeM.warpDelete(warpName);
+    }
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
         field.setAccessible(true);
