@@ -8,14 +8,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
-
 import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.gui.WarpEditManager;
 
 public class WarpHandling {
 
@@ -27,6 +24,7 @@ public class WarpHandling {
     public WarpHandling(SA SA) {
         this.main = SA;
     }
+
 
     public void setWarp(String name, Location warpLoc) {
         warps.put(name, warpLoc);
@@ -56,7 +54,7 @@ public class WarpHandling {
     public void delWarp(String warp) {
         warpsToDelete.add(warp);
         warps.remove(warp);
-        
+        main.warpDelete(warp);        
     }
 
     public String unpackageLocationSerialised(Location loc) {

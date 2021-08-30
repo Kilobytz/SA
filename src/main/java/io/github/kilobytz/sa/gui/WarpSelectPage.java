@@ -1,9 +1,7 @@
 package io.github.kilobytz.sa.gui;
 
 import java.util.List;
-
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 public class WarpSelectPage extends GUICreator{
 
@@ -11,7 +9,7 @@ public class WarpSelectPage extends GUICreator{
     private int slot;
     private int warpEditPageNum = 1;
     WarpEditManager WEM;
-    Material mat = Material.SNOW_BALL;
+    Material mat = Material.ENDER_PEARL;
 
 
     public WarpSelectPage(List<String> warps, WarpEditManager WEM,int slot,int pageNum){
@@ -27,7 +25,7 @@ public class WarpSelectPage extends GUICreator{
         for(int i = 0; i <= 53; ++i){
             if(!isNumberSide(i)){
                 if(warpNum >= warps.size()){
-                    setItem(i, makeItem(Material.STAINED_GLASS_PANE,(short)8,"", ""),(player,object) -> {
+                    setItem(i, makeItem(Material.STAINED_GLASS_PANE,(short)8,"-", "-"),(player,object) -> {
                         return;
                     });
                     continue;
@@ -36,14 +34,13 @@ public class WarpSelectPage extends GUICreator{
                     int e = warpNum;
                     setItem(i, makeItem(Material.EYE_OF_ENDER, warps.get(warpNum), "Click to add this warp to the slot"),(player,object) -> {
                         ((WarpEditManager)object).setWarpEditorItem(slot, warpEditPageNum,warps.get(e),mat,player);
-                        this.delete();
                     });
                     setActionObject(i, WEM);
                     ++warpNum;
                     continue;
                 }
             }
-            setItem(i, makeItem(Material.STAINED_GLASS_PANE,(short)7,"", ""),(player,object) -> {
+            setItem(i, makeItem(Material.STAINED_GLASS_PANE,(short)7,"-", "-"),(player,object) -> {
                 return;
             });
 

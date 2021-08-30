@@ -26,6 +26,7 @@ public class WarpEditManager {
     HashMap<Integer,TreeMap<Integer,String>> warpEditorWarps = new HashMap<>();
     HashMap<Integer,TreeMap<Integer,Material>> warpEditorMaterials = new HashMap<>();
     TreeMap<Integer,WarpEditor> warpEditorPages = new TreeMap<>();
+    TreeMap<Integer,WarperGUI> warperPages = new TreeMap<>();
     HashMap<UUID,TreeMap<Integer,WarpSelectPage>> selectPages = new HashMap<>();
     SA main;
     WarpHandling wH;
@@ -38,18 +39,20 @@ public class WarpEditManager {
     public void GUIWarpSetup(){
         loadGuiWarps();
         loadEditor();
+        loadWarper();
     }
 
     public void openFirstEditorPage(Player p){
         warpEditorPages.get(0).open(p);
     }
 
+    public void openFirstWarperPage(Player p){
+        warperPages.get(0).open(p);
+    }
+
     public void loadEditor(){
         for (int i = 0; i < warpEditorWarps.size(); i+=42) {
             warpEditorPages.put(i/42, new WarpEditor(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42), this,i/42));
-        }
-        if(warpEditorWarps.size() == 0){
-            warpEditorPages.put(0, new WarpEditor(null,null,this,0));
         }
         for(int num : warpEditorPages.keySet()){
             if(warpEditorPages.size() > 1){
@@ -78,6 +81,40 @@ public class WarpEditManager {
             }
         }
     }
+
+    public void loadWarper(){
+        for (int i = 0; i < warpEditorWarps.size(); i+=42) {
+            warperPages.put(i/42, new WarperGUI(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42), i/42,wH));
+        }
+        for(int num : warperPages.keySet()){
+            if(warperPages.size() > 1){
+                if(num == 0){
+                    warperPages.get(num).setItem(53, warperPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
+                        ((TreeMap<Integer,WarperGUI>)object).get(num+1).open(player);
+                    }); //only next
+                    warperPages.get(num).setActionObject(53, warperPages);
+                }
+                if(num < (warperPages.size()-1) && num != 0){
+                    warperPages.get(num).setItem(53, warperPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
+                        ((TreeMap<Integer,WarperGUI>)object).get(num+1).open(player);
+                    }); //next
+                    warperPages.get(num).setActionObject(53, warperPages);
+                    warperPages.get(num).setItem(45, warperPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
+                        ((TreeMap<Integer,WarperGUI>)object).get(num-1).open(player);
+                    }); //previous
+                    warperPages.get(num).setActionObject(45, warperPages);
+                }
+                if(num == (warperPages.size()-1)){
+                    warperPages.get(num).setItem(45, warperPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
+                        ((TreeMap<Integer,WarperGUI>)object).get(num-1).open(player);
+                    }); //only previous
+                    warperPages.get(num).setActionObject(45, warperPages);
+                }
+            }
+        }
+    }
+
+    //todo: make buttons to add and remove warp pages
 
     public void openSelectPage(int slot,int pageNum,Player p){
         TreeMap<Integer,WarpSelectPage> select = new TreeMap<>();
@@ -125,6 +162,12 @@ public class WarpEditManager {
         warpEditorPages.get(pageNum).open(p);
     }
 
+    public void deleteWarpEditorItem(int slot, int pageNum){
+        warpEditorPages.get(pageNum).setEmptyWarp(slot);
+        warpEditorWarps.get(pageNum).remove(slot);
+        warpEditorMaterials.get(pageNum).remove(slot);
+    }
+
     public void setWarpEditorItem(int slot, int pageNum, String warp,Material mat,Player p){
         ItemStack item = new ItemStack(mat);
         ItemMeta itemMeta = item.getItemMeta();
@@ -134,6 +177,7 @@ public class WarpEditManager {
         itemMeta.setLore(lore);
         item.setItemMeta(itemMeta);
         warpEditorPages.get(pageNum).setNewWarp(slot, item);
+        warperPages.get(pageNum).setNewWarp(slot,warp,mat);
         warpEditorWarps.get(pageNum).put(slot, warp);
         warpEditorMaterials.get(pageNum).put(slot, mat);
         selectPages.remove(p.getUniqueId());
@@ -145,6 +189,8 @@ public class WarpEditManager {
             main.openConnection();
             Statement statement = SA.connection.createStatement();
             int pageCount = 0;
+            warpEditorWarps.put(pageCount, new TreeMap<Integer, String>());
+            warpEditorMaterials.put(pageCount, new TreeMap<Integer, Material>());
             ResultSet rs = statement.executeQuery("SELECT * FROM gui_warps;");{
             while(rs.next()) {
                 if(rs.getInt(1)/42 > pageCount){
@@ -162,6 +208,9 @@ public class WarpEditManager {
             }
         }
         statement.close();
+        if(warpEditorWarps.size() == 0){
+            warpEditorPages.put(0, new WarpEditor(null,null,this,0));
+        }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -175,6 +224,23 @@ public class WarpEditManager {
         //warps_name = warps name (linked to warps table)
 
         //make sure to sort into correct place based on item slot number
+    }
+
+    public void warpDelete(String warpName){
+        for(int page : warpEditorWarps.keySet()){
+            for(int slot : warpEditorWarps.get(page).keySet()){
+                if(warpEditorWarps.get(page).get(slot).equals(warpName)){
+                    deleteWarpEditorItem(slot, page, null);
+                    deleteWarperItem(slot, page);
+                    return;
+                }
+            }
+        }
+        
+    }
+    
+    public void deleteWarperItem(int slot, int page){
+        warperPages.get(page).setEmptyWarp(slot);
     }
 
     public void saveGuiWarps(){
