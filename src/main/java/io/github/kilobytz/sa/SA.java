@@ -11,6 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
@@ -27,6 +29,7 @@ import io.github.kilobytz.sa.command.Warp;
 import io.github.kilobytz.sa.command.WorldTP;
 import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.gui.GUIListener;
+import io.github.kilobytz.sa.gui.ItemNMSRegistry;
 import io.github.kilobytz.sa.gui.WarpEditManager;
 import io.github.kilobytz.sa.misc.CollisionManager;
 import io.github.kilobytz.sa.misc.Grapple;
@@ -37,7 +40,7 @@ import io.github.kilobytz.sa.misc.WorldLoader;
 import io.github.kilobytz.sa.players.PlayerListener;
 import io.github.kilobytz.sa.players.PlayerManager;
 import io.github.kilobytz.sa.tips.TipManager;
-import io.github.warping.WarpHandling;
+import io.github.kilobytz.sa.warping.WarpHandling;
 
 
 public class SA extends JavaPlugin {
@@ -69,8 +72,9 @@ public class SA extends JavaPlugin {
     WorldLoader wLo = new WorldLoader(this);
     WorldTP wTP = new WorldTP();
     WorldListener wLi = new WorldListener();
-    GUIListener guiL = new GUIListener();
-    WarpEditManager WeM = new WarpEditManager(this);
+    ItemNMSRegistry itemReg = new ItemNMSRegistry();
+    WarpEditManager WeM = new WarpEditManager(this,wH);
+    GUIListener guiL = new GUIListener(itemReg,WeM);
 
 
     boolean dbOn = false;
@@ -92,12 +96,15 @@ public class SA extends JavaPlugin {
         loginDelay();
         tM.loadTips();
         wH.loadWarps();
+        setupItemActions();
+        WeM.GUIWarpSetup();
     }
 
     @Override
     public void onDisable() {
         wH.saveWarps();
         tM.saveTips();
+        WeM.saveGuiWarps();
     }
 
     public void setSQL() {
@@ -172,6 +179,16 @@ public class SA extends JavaPlugin {
         wLi.setInfo(wH, this);
     }
 
+    public void setupItemActions(){
+        itemReg.registerItem("lonesword", (player,object) -> {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 0));
+        });
+        itemReg.registerItem("warpeditor", (player,object) -> {
+            ((WarpEditManager)object).openFirstEditorPage(player);
+        });
+        itemReg.setActionObject("warpeditor",WeM);
+    }
+
     public void openConnection() throws SQLException, ClassNotFoundException {
         if(!dbOn){
             throw new NumberFormatException();
@@ -188,6 +205,7 @@ public class SA extends JavaPlugin {
     public boolean isDbOn(){
         return dbOn;
     }
+
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
         field.setAccessible(true);
@@ -212,7 +230,6 @@ public class SA extends JavaPlugin {
     public boolean getDelayLogin() {
         return delayLogin;
     }
-
 
     private void createConfig() {
             try {

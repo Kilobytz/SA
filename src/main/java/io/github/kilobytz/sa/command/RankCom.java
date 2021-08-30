@@ -66,6 +66,11 @@ public class RankCom implements TabExecutor {
                         return true;
 
                     case "add" :
+                        if(args.length == 2){
+                            sender.sendMessage("Invalid command." + ChatColor.RED);
+                            printRankCommands(sender);
+                            return true;
+                        }
                         if(nameValid == false) {
                             sender.sendMessage("Invalid player name." + ChatColor.RED);
                             return true;

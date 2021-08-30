@@ -1,4 +1,4 @@
-package io.github.warping;
+package io.github.kilobytz.sa.warping;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,13 +15,14 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import io.github.kilobytz.sa.SA;
+import io.github.kilobytz.sa.gui.WarpEditManager;
 
 public class WarpHandling {
 
     SA main;
 
     Map<String,Location> warps = new HashMap<String,Location>();
-    List<String> warpsToDelete = new LinkedList<String>();
+    LinkedList<String> warpsToDelete = new LinkedList<String>();
 
     public WarpHandling(SA SA) {
         this.main = SA;
@@ -55,6 +56,7 @@ public class WarpHandling {
     public void delWarp(String warp) {
         warpsToDelete.add(warp);
         warps.remove(warp);
+        
     }
 
     public String unpackageLocationSerialised(Location loc) {
@@ -99,6 +101,10 @@ public class WarpHandling {
         } catch (NumberFormatException e) {
             main.getLogger().info("No Database found, warp loading failed.");
         }
+    }
+
+    public LinkedList<String> getWarpsToDelete(){
+        return warpsToDelete;
     }
 
     public void saveWarps(){

@@ -14,8 +14,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class GUIListener implements Listener{
 
-
+    ItemNMSRegistry itemReg;
+    WarpEditManager WEM;
     
+    public GUIListener(ItemNMSRegistry itemReg, WarpEditManager WEM){
+        this.itemReg = itemReg;
+        this.WEM = WEM;
+    }
+
     @EventHandler
     public void onClick(InventoryClickEvent event){
         if (!(event.getWhoClicked() instanceof Player)){
@@ -29,9 +35,15 @@ public class GUIListener implements Listener{
             event.setCancelled(true);
             GUICreator gui = GUICreator.getInventoriesByUUID().get(inventoryUUID);
             GUICreator.PlayerGUIAction action = gui.getActions().get(event.getSlot());
-         
-            if (action != null){
-                action.click(player);
+            if(gui.getActionObject(event.getSlot()) != null){
+                if (action != null){
+                    action.click(player,gui.getActionObject(event.getSlot()));
+                }
+            }
+            else{
+                if (action != null){
+                    action.click(player,null);
+                }
             }
         }
     }
@@ -58,9 +70,19 @@ public class GUIListener implements Listener{
             ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
             net.minecraft.server.v1_12_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             if (nmsItem.hasTag()) {
-                if(nmsItem.getTag().hasKey("warpedit")) {
-                    //test method, replace 'if key' with handler class for storing lambda method with nbt tag and code for said nbt tag
-                    event.setCancelled(true);
+                for(String tag : itemReg.getTags()){
+                    if(nmsItem.getTag().hasKey(tag)) {
+                        ItemNMSRegistry.ItemAction action = itemReg.getItems().get(tag);
+
+                        if(itemReg.getActionObject(tag) != null){
+                            action.action(event.getPlayer(),itemReg.getActionObject(tag));
+                            event.setCancelled(true);
+                        }
+                        else{
+                            action.action(event.getPlayer(),null);
+                            event.setCancelled(true);
+                        }
+                    }
                 }
             }
         }

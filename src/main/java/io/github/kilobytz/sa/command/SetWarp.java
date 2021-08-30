@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import io.github.warping.WarpHandling;
+import io.github.kilobytz.sa.warping.WarpHandling;
 
 import java.util.ArrayList;
 import java.util.List;

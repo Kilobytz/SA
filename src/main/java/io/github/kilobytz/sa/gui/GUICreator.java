@@ -20,13 +20,15 @@ public abstract class GUICreator {
     public static Map<UUID, GUICreator> inventoriesByUUID = new HashMap<>();
     public static Map<UUID, UUID> openInventories = new HashMap<>();
     private UUID uuid;
-    private Inventory playerInventory;
+    protected Inventory playerInventory;
     private Map<Integer, PlayerGUIAction> actions;
+    private Map<Integer, Object> actionOject;
 
     public GUICreator(int invSize, String invName) {
         uuid = UUID.randomUUID();
         playerInventory = Bukkit.createInventory(null, invSize, invName);
         actions = new HashMap<>();
+        actionOject = new HashMap<>();
         inventoriesByUUID.put(getUuid(), this);
     }
 
@@ -39,6 +41,14 @@ public abstract class GUICreator {
         if (action != null){
             actions.put(slot, action);
         }
+    }
+
+    public Object getActionObject(int slot){
+        return actionOject.get(slot);
+    }
+
+    public void setActionObject(int slot,Object object){
+        actionOject.put(slot,object);
     }
  
     public void setItem(int slot, ItemStack stack){
@@ -56,13 +66,24 @@ public abstract class GUICreator {
         return item;
     }
 
+    public ItemStack makeItem(Material mat, short durability,String name, String lore){
+        ItemStack item = new ItemStack(mat,1,durability);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        List<String> loreList = new LinkedList<String>();
+        loreList.add(lore);
+        meta.setLore(loreList);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public void open(Player p){
         p.openInventory(playerInventory);
         openInventories.put(p.getUniqueId(), getUuid());
     }
 
     public interface PlayerGUIAction {
-        void click(Player player);
+        void click(Player player,Object object);
     }
 
     public static Map<UUID, GUICreator> getInventoriesByUUID() {
@@ -87,3 +108,6 @@ public abstract class GUICreator {
         inventoriesByUUID.remove(getUuid());
     }
 }
+///TODO:
+//RIG SLOT TO SET IN SELECT PAGE,
+//RIG PAGE NUM TO SET IN SELECT PAGE

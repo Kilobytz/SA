@@ -1,5 +1,5 @@
 name: SA
-version: 2.5.11
+version: 2.5.13
 author: Kilobytes
 main:  io.github.kilobytz.sa.SA
 description: Commands for SA dungeon server.
@@ -33,11 +33,11 @@ commands:
   setpersonalspawnpoint:
     description: Sets user's spawnpoint.
     aliases: sps
-    permission: sa.donator
+    permission: sa.general
   enderchest:
     description: Opens user's Enderchest.
     aliases: ec
-    permission: sa.donator
+    permission: sa.general
   warp:
     description: Warps the user to the designated warp.
     permission: sa.warp

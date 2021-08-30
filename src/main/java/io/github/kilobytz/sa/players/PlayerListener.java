@@ -104,9 +104,15 @@ public class PlayerListener implements Listener {
   } catch (NumberFormatException e) {}
   pM.removePlayer(pM.getPlayerInst(event.getPlayer()));
   }
-  
 
   @EventHandler
+  public void playerKicked(PlayerKickEvent event) {
+    if(event.getReason().equals("disconnect.spam")){
+      event.setCancelled(true);
+    }
+  }
+
+  /*@EventHandler
   public void playerKicked(PlayerKickEvent event) {
     try {
       main.openConnection();
@@ -119,7 +125,7 @@ public class PlayerListener implements Listener {
       e.printStackTrace();
   } catch (NumberFormatException e) {}
   pM.removePlayer(pM.getPlayerInst(event.getPlayer()));
-  }
+  }*/
 
   @EventHandler
   public void playerPreLogin(AsyncPlayerPreLoginEvent event) {
