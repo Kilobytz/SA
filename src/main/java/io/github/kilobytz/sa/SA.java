@@ -9,10 +9,15 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
+
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
 import io.github.kilobytz.sa.command.Muteall;
@@ -133,6 +138,8 @@ public class SA extends JavaPlugin {
         this.getCommand("muteall").setExecutor(this.muteall);
         this.getCommand("pvptoggle").setExecutor(this.pvpTog);
         this.getCommand("worldtp").setExecutor(this.wTP);
+        
+        Material mat = Material.CONCRETE;
     }
 
 
@@ -176,6 +183,7 @@ public class SA extends JavaPlugin {
         pvpTog.setup(pNH);
         wTP.setup(wLo);
         wLi.setInfo(wH, this);
+        delTeams();
     }
 
     public void setupItemActions(){
@@ -204,7 +212,6 @@ public class SA extends JavaPlugin {
                 + this.host + ":" + this.port + "/" + this.database,
                 this.username, this.password);
     }
-
     public boolean isDbOn(){
         return dbOn;
     }
@@ -212,6 +219,7 @@ public class SA extends JavaPlugin {
     public void warpDelete(String warpName){
         WeM.warpDelete(warpName);
     }
+
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
         field.setAccessible(true);
@@ -221,6 +229,16 @@ public class SA extends JavaPlugin {
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
   
         field.set(null, newValue);
+     }
+
+     public void delTeams(){
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        Scoreboard board = manager.getMainScoreboard();
+        for(Team team : board.getTeams()){
+            if(!values.getAllRanks().contains(team.getName())){
+                team.unregister();
+            }
+        }
      }
 
     public void loginDelay() {

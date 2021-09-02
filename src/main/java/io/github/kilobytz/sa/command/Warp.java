@@ -26,35 +26,43 @@ public class Warp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("warp")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
-                    int length = args.length;
-                    if (length == 0) {
-                        List<String> allWarps = warpHandling.getAllWarpNames();
-                        if(allWarps.size() != 0) {
-                            String warpString = allWarps.get(0);
-                            if(allWarps.size() > 1) {
-                                String symbol = ", ";
-                                for (String warps : allWarps) {
-                                    warpString += (symbol + warps);
-                                }
+                int length = args.length;
+                if (length == 0) {
+                    List<String> allWarps = warpHandling.getAllWarpNames();
+                    if(allWarps.size() != 0) {
+                        String warpString = allWarps.get(0);
+                        if(allWarps.size() > 1) {
+                            String symbol = ", ";
+                            for (String warps : allWarps) {
+                                warpString += (symbol + warps);
                             }
-                            playerSent.sendMessage(warpString);
-                            return true;
                         }
-                        else{
-                            playerSent.sendMessage(String.format("%sError. There are no warps.",ChatColor.RED));
-                            return true;
-                        }
-                    }
-                    if (length == 1) {
-                        if (warpHandling.checkWarp(args[0])) {
-                            warpHandling.warpPlayer(playerSent,args[0]);
-                            return true;
-                        }
-                        playerSent.sendMessage(String.format("%sError. Warp does not exist.",ChatColor.RED));
+                        playerSent.sendMessage(warpString);
                         return true;
                     }
-                    playerSent.sendMessage(String.format("%sError. Invalid character.",ChatColor.RED));
+                    else{
+                        playerSent.sendMessage(String.format("%sError. There are no warps.",ChatColor.RED));
+                        return true;
+                    }
+                }
+                if (length >= 1){
+                    String warpLoc = args[0];
+                    if(length > 1){
+                        StringBuilder stringBuilder = new StringBuilder(50);
+                        for(int i = 0; i < length-1; ++i){
+                            stringBuilder.append(args[i]);
+                            stringBuilder.append(" ");
+                        }
+                        stringBuilder.append(args[length-1]);
+                        warpLoc = stringBuilder.toString();
+                    }
+                    if(warpHandling.checkWarp(warpLoc)){
+                        warpHandling.warpPlayer(playerSent, warpLoc);
+                        return true;                        
+                    }
+                    playerSent.sendMessage(String.format("%sError. Warp does not exist.",ChatColor.RED));
                     return true;
+                }
             }
             sender.sendMessage("Error. You are not a player.");
             return true;
@@ -81,6 +89,9 @@ public class Warp implements TabExecutor {
                     return fill;
                 }
                 return fill;
+            }
+            else{
+                return new ArrayList<>();
             }
         }
         return null;

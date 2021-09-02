@@ -24,8 +24,8 @@ public class CollisionManager implements Listener {
     public void setTeamConfig() {
         this.manager = Bukkit.getScoreboardManager();
         this.board = manager.getMainScoreboard();
-        if(board.getTeam("collision") == null) {
-            Team collision = board.registerNewTeam("collision");
+        if(board.getTeam("Player") == null) {
+            Team collision = board.registerNewTeam("Player");
             collision.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         }
     }
@@ -34,16 +34,16 @@ public class CollisionManager implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         setTeamConfig();
         try {
-            if (!board.getTeam("collision").getEntries().contains(event.getPlayer().getDisplayName())) {
+            if (!board.getTeam("Player").getEntries().contains(event.getPlayer().getDisplayName())) {
                 if(pM.getPlayerInst(event.getPlayer()).hasRank()) {
                     return;
                 }
-                board.getTeam("collision").addEntry(event.getPlayer().getDisplayName());
+                board.getTeam("Player").addEntry(event.getPlayer().getDisplayName());
             }
         }catch (NullPointerException e) {
-            Team collision = board.registerNewTeam("collision");
+            Team collision = board.registerNewTeam("Player");
             collision.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-            board.getTeam("collision").addEntry(event.getPlayer().getDisplayName());
+            board.getTeam("Player").addEntry(event.getPlayer().getDisplayName());
         }
     }
 }

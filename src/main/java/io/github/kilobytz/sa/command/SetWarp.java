@@ -26,18 +26,29 @@ public class SetWarp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("setwarp")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
-                    int length = args.length;
-                    if (length == 0) {
-                        playerSent.sendMessage(String.format("%sError, field is blank.", ChatColor.RED));
-                        return true;
-                    }
-                    if (length == 1){
-                        warpHandling.setWarp(args[0], playerSent.getLocation());
-                        playerSent.sendMessage(String.format("%sWarp " + args[0] + " set.",ChatColor.GREEN));
-                        return true;
-                    }
-                    playerSent.sendMessage(String.format("%sError, invalid character.", ChatColor.RED));
+                int length = args.length;
+                if (length == 0) {
+                    playerSent.sendMessage(String.format("%sError, field is blank.", ChatColor.RED));
                     return true;
+                }
+                if (length >= 1){
+                    String warpLoc = args[0];
+                    if(length > 1){
+                        StringBuilder stringBuilder = new StringBuilder(50);
+                        for(int i = 0; i < length-1; ++i){
+                            stringBuilder.append(args[i]);
+                            stringBuilder.append(" ");
+                        }
+                        stringBuilder.append(args[length-1]);
+                        warpLoc = stringBuilder.toString();
+                    }
+                    if(warpHandling.checkWarp(warpLoc)){
+                        warpHandling.delWarp(warpLoc);
+                    }
+                    warpHandling.setWarp(warpLoc, playerSent.getLocation());
+                    playerSent.sendMessage(String.format("%sWarp " + warpLoc + " set.",ChatColor.GREEN));
+                    return true;                        
+                }
             }
             sender.sendMessage("Error. You are not a player.");
             return true;
@@ -65,6 +76,9 @@ public class SetWarp implements TabExecutor {
                     return fill;
                 }
                 return fill;
+            }
+            else{
+                return new ArrayList<>();
             }
         }
         return null;

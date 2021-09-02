@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
@@ -18,7 +20,7 @@ public class WarpHandling {
 
     SA main;
 
-    Map<String,Location> warps = new HashMap<String,Location>();
+    Map<String,Location> warps = new TreeMap<String,Location>(String.CASE_INSENSITIVE_ORDER);
     LinkedList<String> warpsToDelete = new LinkedList<String>();
 
     public WarpHandling(SA SA) {
@@ -36,12 +38,21 @@ public class WarpHandling {
         return warpNames;
     }
 
+    public String getWarpNameCase(String name){
+        for(String warp : warps.keySet()){
+            if(warp.equalsIgnoreCase(name)){
+                return warp;
+            }
+        }
+        return null;
+    }
+
     public int getNumOfWarps() {
         return warps.size();
         }
 
     public boolean checkWarp(String name) {
-        if(warps.keySet().contains(name)) {
+        if(warps.keySet().stream().anyMatch(name::equalsIgnoreCase)) {
             return true;
         }
         return false;
@@ -108,19 +119,22 @@ public class WarpHandling {
     public void saveWarps(){
         try {
             main.openConnection();
-            String insertString = "INSERT INTO warps (name, location) VALUES (?,?) ON DUPLICATE KEY UPDATE location = ?";
+            String deleteAllString = "TRUNCATE warps";
             String deleteString = "DELETE FROM warps WHERE name = ?";
+            String insertString = "INSERT INTO warps (name, location) VALUES (?,?) ON DUPLICATE KEY UPDATE location = ?";
+            PreparedStatement preppedDiffDelete = SA.connection.prepareStatement(deleteAllString);
+            preppedDiffDelete.executeUpdate();
+            for(String warpName : warpsToDelete) {
+                PreparedStatement preppedDelete = SA.connection.prepareStatement(deleteString);
+                preppedDelete.setString(1, warpName);
+                preppedDelete.executeUpdate();
+            }
             for(String warpName : warps.keySet()) {
                 PreparedStatement preppedInsert = SA.connection.prepareStatement(insertString);
                 preppedInsert.setString(1, warpName);
                 preppedInsert.setString(2, unpackageLocationSerialised(warps.get(warpName)));
                 preppedInsert.setString(3, unpackageLocationSerialised(warps.get(warpName)));
                 preppedInsert.executeUpdate();
-            }
-            for(String warpName : warpsToDelete) {
-                PreparedStatement preppedDelete = SA.connection.prepareStatement(deleteString);
-                preppedDelete.setString(1, warpName);
-                preppedDelete.executeUpdate();
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

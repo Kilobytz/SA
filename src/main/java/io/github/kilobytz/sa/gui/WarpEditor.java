@@ -10,7 +10,7 @@ public class WarpEditor extends GUICreator{
     WarpEditManager WEM;
     int pageNum;
 
-    public WarpEditor(TreeMap<Integer,String> warps, TreeMap<Integer,Material> warpMats,WarpEditManager WEM, int pageNum){
+    public WarpEditor(TreeMap<Integer,String> warps, TreeMap<Integer,Material> warpMats, TreeMap<Integer,Short> warpMatData, WarpEditManager WEM, int pageNum){
         super(54, "Warp Editor");
         this.WEM = WEM;
         this.pageNum = pageNum;
@@ -25,9 +25,16 @@ public class WarpEditor extends GUICreator{
             else{
                 if(warps != null){
                     if(warps.keySet().contains(i)){
-                        setItem(i, makeItem(warpMats.get(i), warps.get(i), "Click me to change warp : " + warps.get(i)),(player,object) -> {
-                            ((WarpEditManager)object).openSelectPage(s, pageNum, player);
-                        });
+                        if(warpMatData.keySet().contains(i)){
+                            setItem(i, makeItem(warpMats.get(i),warpMatData.get(i), warps.get(i), "Click me to change warp : " + warps.get(i)),(player,object) -> {
+                                ((WarpEditManager)object).openSelectPage(s, pageNum, player);
+                            });
+                        }
+                        else{
+                            setItem(i, makeItem(warpMats.get(i), warps.get(i), "Click me to change warp : " + warps.get(i)),(player,object) -> {
+                                ((WarpEditManager)object).openSelectPage(s, pageNum, player);
+                            });
+                        }
                         setActionObject(i, WEM);
                         continue;
                     }

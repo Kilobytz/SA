@@ -1,6 +1,7 @@
 package io.github.kilobytz.sa.gui;
 
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Tree;
 
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.warping.WarpHandling;
@@ -25,6 +27,7 @@ public class WarpEditManager {
 
     HashMap<Integer,TreeMap<Integer,String>> warpEditorWarps = new HashMap<>();
     HashMap<Integer,TreeMap<Integer,Material>> warpEditorMaterials = new HashMap<>();
+    HashMap<Integer,TreeMap<Integer,Short>> warpEditorMatData = new HashMap<>();
     TreeMap<Integer,WarpEditor> warpEditorPages = new TreeMap<>();
     TreeMap<Integer,WarperGUI> warperPages = new TreeMap<>();
     HashMap<UUID,TreeMap<Integer,WarpSelectPage>> selectPages = new HashMap<>();
@@ -52,7 +55,7 @@ public class WarpEditManager {
 
     public void loadEditor(){
         for (int i = 0; i < warpEditorWarps.size(); i+=42) {
-            warpEditorPages.put(i/42, new WarpEditor(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42), this,i/42));
+            warpEditorPages.put(i/42, new WarpEditor(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42),warpEditorMatData.get(i/42), this,i/42));
         }
         for(int num : warpEditorPages.keySet()){
             if(warpEditorPages.size() > 1){
@@ -84,7 +87,7 @@ public class WarpEditManager {
 
     public void loadWarper(){
         for (int i = 0; i < warpEditorWarps.size(); i+=42) {
-            warperPages.put(i/42, new WarperGUI(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42), i/42,wH));
+            warperPages.put(i/42, new WarperGUI(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42),warpEditorMatData.get(i/42), i/42,wH));
         }
         for(int num : warperPages.keySet()){
             if(warperPages.size() > 1){
@@ -156,16 +159,24 @@ public class WarpEditManager {
 
     public void deleteWarpEditorItem(int slot, int pageNum,Player p){
         warpEditorPages.get(pageNum).setEmptyWarp(slot);
+        deleteWarperItem(slot, pageNum);
         warpEditorWarps.get(pageNum).remove(slot);
         warpEditorMaterials.get(pageNum).remove(slot);
+        if(warpEditorMatData.get(pageNum).get(slot) != null){
+            warpEditorMatData.get(pageNum).remove(slot);
+        }
         selectPages.remove(p.getUniqueId());
         warpEditorPages.get(pageNum).open(p);
     }
 
     public void deleteWarpEditorItem(int slot, int pageNum){
         warpEditorPages.get(pageNum).setEmptyWarp(slot);
+        deleteWarperItem(slot, pageNum);
         warpEditorWarps.get(pageNum).remove(slot);
         warpEditorMaterials.get(pageNum).remove(slot);
+        if(warpEditorMatData.get(pageNum).get(slot) != null){
+            warpEditorMatData.get(pageNum).remove(slot);
+        }
     }
 
     public void setWarpEditorItem(int slot, int pageNum, String warp,Material mat,Player p){
@@ -180,6 +191,7 @@ public class WarpEditManager {
         warperPages.get(pageNum).setNewWarp(slot,warp,mat);
         warpEditorWarps.get(pageNum).put(slot, warp);
         warpEditorMaterials.get(pageNum).put(slot, mat);
+        warpEditorMatData.get(pageNum).put(slot, (short)0);
         selectPages.remove(p.getUniqueId());
         warpEditorPages.get(pageNum).open(p);
     }
@@ -191,25 +203,28 @@ public class WarpEditManager {
             int pageCount = 0;
             warpEditorWarps.put(pageCount, new TreeMap<Integer, String>());
             warpEditorMaterials.put(pageCount, new TreeMap<Integer, Material>());
+            warpEditorMatData.put(pageCount, new TreeMap<Integer,Short>());
             ResultSet rs = statement.executeQuery("SELECT * FROM gui_warps;");{
             while(rs.next()) {
                 if(rs.getInt(1)/42 > pageCount){
                     ++pageCount;
                     warpEditorWarps.put(pageCount, new TreeMap<Integer, String>());
                     warpEditorMaterials.put(pageCount, new TreeMap<Integer, Material>());
+                    warpEditorMatData.put(pageCount, new TreeMap<Integer,Short>());
                 }
                 warpEditorWarps.get(pageCount).put(rs.getInt(1), rs.getString(2));
                 if(rs.getString(3) != null){
                     warpEditorMaterials.get(pageCount).put(rs.getInt(1), Material.getMaterial(rs.getString(3)));
+                    warpEditorMatData.get(pageCount).put(rs.getInt(1), rs.getShort(4));
                 }
                 else{
-                    warpEditorMaterials.get(pageCount).put(rs.getInt(1), Material.SNOW_BALL);
+                    warpEditorMaterials.get(pageCount).put(rs.getInt(1), Material.ENDER_PEARL);
                 }
             }
         }
         statement.close();
         if(warpEditorWarps.size() == 0){
-            warpEditorPages.put(0, new WarpEditor(null,null,this,0));
+            warpEditorPages.put(0, new WarpEditor(null,null,null,this,0));
         }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -246,22 +261,49 @@ public class WarpEditManager {
     public void saveGuiWarps(){
         try {
             main.openConnection();
-            String insertString = "INSERT INTO gui_warps (slot, warps_name) VALUES (?,?) ON DUPLICATE KEY UPDATE warps_name = ?";
+            String deleteAllString = "TRUNCATE gui_warps";
+            String insertWarpString = "INSERT INTO gui_warps (slot, warps_name) VALUES (?,?) ON DUPLICATE KEY UPDATE warps_name = ?";
+            String insertMatString = "UPDATE gui_warps SET material = (?),data = (?) WHERE slot = (?)";
             String deleteString = "DELETE FROM gui_warps WHERE warps_name = ?";
+            //String deleteDifferenceString = "DELETE FROM gui_warps WHERE slot NOT IN (?)";
+            PreparedStatement preppedDiffDelete = SA.connection.prepareStatement(deleteAllString);
+            preppedDiffDelete.executeUpdate();
+            for(String warpName : wH.getWarpsToDelete()) {
+                PreparedStatement preppedDelete = SA.connection.prepareStatement(deleteString);
+                preppedDelete.setString(1, warpName);
+                preppedDelete.executeUpdate();
+            }
             for(int page : warpEditorWarps.keySet()) {
                 for(int slot : warpEditorWarps.get(page).keySet()){
-                    PreparedStatement preppedInsert = SA.connection.prepareStatement(insertString);
+                    PreparedStatement preppedInsert = SA.connection.prepareStatement(insertWarpString);
                     preppedInsert.setInt(1, slot);
                     preppedInsert.setString(2, warpEditorWarps.get(page).get(slot));
                     preppedInsert.setString(3, warpEditorWarps.get(page).get(slot));
                     preppedInsert.executeUpdate();
                 }
             }
-            for(String warpName : wH.getWarpsToDelete()) {
-                PreparedStatement preppedDelete = SA.connection.prepareStatement(deleteString);
-                preppedDelete.setString(1, warpName);
-                preppedDelete.executeUpdate();
-            }
+            if(warpEditorMaterials.size()>1){
+                for(int page : warpEditorMaterials.keySet()) {
+                    for(int slot : warpEditorWarps.get(page).keySet()){
+                        PreparedStatement preppedInsert = SA.connection.prepareStatement(insertMatString);
+                        preppedInsert.setInt(3, slot);
+                        preppedInsert.setString(1, warpEditorMaterials.get(page).get(slot).toString());
+                        preppedInsert.setShort(2, warpEditorMatData.get(page).get(slot));
+                        preppedInsert.executeUpdate();
+                    }
+                }
+            }          
+            
+            //thanks for not supporting arrays mySQL, making my life pain
+            /*for(int page : warpEditorWarps.keySet()){
+                for(int slot : warpEditorWarps.get(page).keySet()){
+                    PreparedStatement preppedDifference = SA.connection.prepareStatement(deleteDifferenceString); //error here - why?
+                Object[] slotArray = warpEditorWarps.get(page).keySet().toArray();
+                Array array = SA.connection.createArrayOf("INT", slotArray);
+                preppedDifference.setArray(1, array);
+                preppedDifference.executeUpdate();
+                }
+            }*/
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -270,5 +312,6 @@ public class WarpEditManager {
         } catch (NumberFormatException e) {
             main.getLogger().info("No Database found, warp saving failed.");
         }
+        
     }
 }

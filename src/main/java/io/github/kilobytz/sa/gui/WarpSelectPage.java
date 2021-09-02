@@ -48,7 +48,6 @@ public class WarpSelectPage extends GUICreator{
         }
         setItem(35, makeItem(Material.STAINED_GLASS_PANE,(short)14, "Delete Warp", "Click to delete the warp"),(player,object) -> {
             ((WarpEditManager)object).deleteWarpEditorItem(slot, warpEditPageNum, player);
-            this.delete();
         });
         setActionObject(35, WEM);
         if(warps.size() == 0){

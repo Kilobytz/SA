@@ -25,23 +25,31 @@ public class DelWarp implements TabExecutor {
         if (command.getName().equalsIgnoreCase("delwarp")) {
             if (sender instanceof Player) {
                 Player playerSent = (Player) sender;
+                int length = args.length;
                 if (playerSent.isOp()) {
-                    int length = args.length;
                     if (length == 0) {
                         playerSent.sendMessage(String.format("%sError, field is blank.", ChatColor.RED));
                         return true;
                     }
-                    if (length == 1){
-                        if(warpHandling.checkWarp(args[0])) {
-                            warpHandling.delWarp(args[0]);
-                            playerSent.sendMessage(String.format("%sWarp " + args[0] + " deleted.",ChatColor.GREEN));
-                            return true;
+                    if (length >= 1){
+                        String warpLoc = args[0];
+                        if(length > 1){
+                            StringBuilder stringBuilder = new StringBuilder(50);
+                                for(int i = 0; i < length-1; ++i){
+                                    stringBuilder.append(args[i]);
+                                    stringBuilder.append(" ");
+                                }
+                            stringBuilder.append(args[length-1]);
+                            warpLoc = stringBuilder.toString();
+                        }
+                        if(warpHandling.checkWarp(warpLoc)){
+                            warpHandling.delWarp(warpLoc);
+                            playerSent.sendMessage(String.format("%sWarp " + warpLoc + " deleted.",ChatColor.GREEN));
+                            return true;                        
                         }
                         playerSent.sendMessage(String.format("%sInvalid warp",ChatColor.GREEN));
                         return true;
                     }
-                    playerSent.sendMessage(String.format("%sError, invalid character.", ChatColor.RED));
-                    return true;
                 }
                 playerSent.sendMessage(String.format("%sI'm sorry, but you do not have permission to perform this command. Please contact the server administrator if you believe that this is in error.", ChatColor.RED));
                 return true;
@@ -71,6 +79,9 @@ public class DelWarp implements TabExecutor {
                         }
                     }
                     return fill;
+            }
+            else{
+                return new ArrayList<>();
             }
         }
         return null;

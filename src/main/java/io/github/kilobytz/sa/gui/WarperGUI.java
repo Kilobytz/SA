@@ -11,7 +11,7 @@ public class WarperGUI extends GUICreator{
     int pageNum;
     WarpHandling wH;
 
-    public WarperGUI(TreeMap<Integer,String> warps, TreeMap<Integer,Material> warpMats, int pageNum, WarpHandling wH){
+    public WarperGUI(TreeMap<Integer,String> warps, TreeMap<Integer,Material> warpMats, TreeMap<Integer,Short> warpMatData, int pageNum, WarpHandling wH){
         super(54, "Warps");
         this.wH = wH;
 
