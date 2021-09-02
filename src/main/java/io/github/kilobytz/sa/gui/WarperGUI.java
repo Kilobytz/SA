@@ -27,9 +27,16 @@ public class WarperGUI extends GUICreator{
             else{
                 if(warps != null){
                     if(warps.keySet().contains(i)){
-                        setItem(i, makeItem(warpMats.get(i), warps.get(i), "Click me to teleport"),(player,object) -> {
-                            wH.warpPlayer(player, warps.get(e));
-                        });
+                        if(warpMatData.keySet().contains(i)){
+                            setItem(i, makeItem(warpMats.get(i),warpMatData.get(i), warps.get(i), "Click me to teleport"),(player,object) -> {
+                                wH.warpPlayer(player, warps.get(e));
+                            });
+                        }
+                        else{
+                            setItem(i, makeItem(warpMats.get(i), warps.get(i), "Click me to teleport"),(player,object) -> {
+                                wH.warpPlayer(player, warps.get(e));
+                            });
+                        }
                         continue;
                     }
                 }

@@ -1,14 +1,12 @@
 package io.github.kilobytz.sa.gui;
 
 
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -17,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Tree;
 
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.warping.WarpHandling;
@@ -54,8 +51,8 @@ public class WarpEditManager {
     }
 
     public void loadEditor(){
-        for (int i = 0; i < warpEditorWarps.size(); i+=42) {
-            warpEditorPages.put(i/42, new WarpEditor(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42),warpEditorMatData.get(i/42), this,i/42));
+        for (int i = 0; i < warpEditorWarps.size(); i+=54) {
+            warpEditorPages.put(i/54, new WarpEditor(warpEditorWarps.get(i/54),warpEditorMaterials.get(i/54),warpEditorMatData.get(i/54), this,i/54));
         }
         for(int num : warpEditorPages.keySet()){
             if(warpEditorPages.size() > 1){
@@ -86,8 +83,8 @@ public class WarpEditManager {
     }
 
     public void loadWarper(){
-        for (int i = 0; i < warpEditorWarps.size(); i+=42) {
-            warperPages.put(i/42, new WarperGUI(warpEditorWarps.get(i/42),warpEditorMaterials.get(i/42),warpEditorMatData.get(i/42), i/42,wH));
+        for (int i = 0; i < warpEditorWarps.size(); i+=54) {
+            warperPages.put(i/54, new WarperGUI(warpEditorWarps.get(i/54),warpEditorMaterials.get(i/54),warpEditorMatData.get(i/54), i/54,wH));
         }
         for(int num : warperPages.keySet()){
             if(warperPages.size() > 1){
@@ -206,7 +203,7 @@ public class WarpEditManager {
             warpEditorMatData.put(pageCount, new TreeMap<Integer,Short>());
             ResultSet rs = statement.executeQuery("SELECT * FROM gui_warps;");{
             while(rs.next()) {
-                if(rs.getInt(1)/42 > pageCount){
+                if(rs.getInt(1)/54 > pageCount){
                     ++pageCount;
                     warpEditorWarps.put(pageCount, new TreeMap<Integer, String>());
                     warpEditorMaterials.put(pageCount, new TreeMap<Integer, Material>());
@@ -245,7 +242,7 @@ public class WarpEditManager {
         for(int page : warpEditorWarps.keySet()){
             for(int slot : warpEditorWarps.get(page).keySet()){
                 if(warpEditorWarps.get(page).get(slot).equals(warpName)){
-                    deleteWarpEditorItem(slot, page, null);
+                    deleteWarpEditorItem(slot, page);
                     deleteWarperItem(slot, page);
                     return;
                 }
@@ -282,7 +279,7 @@ public class WarpEditManager {
                     preppedInsert.executeUpdate();
                 }
             }
-            if(warpEditorMaterials.size()>1){
+            if(warpEditorMaterials.size()>=1){
                 for(int page : warpEditorMaterials.keySet()) {
                     for(int slot : warpEditorWarps.get(page).keySet()){
                         PreparedStatement preppedInsert = SA.connection.prepareStatement(insertMatString);

@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -30,6 +29,7 @@ import io.github.kilobytz.sa.command.Spawn;
 import io.github.kilobytz.sa.command.Suicide;
 import io.github.kilobytz.sa.command.Tip;
 import io.github.kilobytz.sa.command.Warp;
+import io.github.kilobytz.sa.command.Warper;
 import io.github.kilobytz.sa.command.WorldTP;
 import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.gui.GUIListener;
@@ -79,6 +79,7 @@ public class SA extends JavaPlugin {
     ItemNMSRegistry itemReg = new ItemNMSRegistry();
     WarpEditManager WeM = new WarpEditManager(this,wH);
     GUIListener guiL = new GUIListener(itemReg,WeM);
+    Warper warper = new Warper();
 
 
     boolean dbOn = false;
@@ -138,8 +139,7 @@ public class SA extends JavaPlugin {
         this.getCommand("muteall").setExecutor(this.muteall);
         this.getCommand("pvptoggle").setExecutor(this.pvpTog);
         this.getCommand("worldtp").setExecutor(this.wTP);
-        
-        Material mat = Material.CONCRETE;
+        this.getCommand("warper").setExecutor(this.warper);
     }
 
 
@@ -158,6 +158,7 @@ public class SA extends JavaPlugin {
         this.getCommand("muteall").setPermissionMessage(ob);
         this.getCommand("pvptoggle").setPermissionMessage(ob);
         this.getCommand("worldtp").setPermissionMessage(ob);
+        this.getCommand("warper").setPermission(ob);
     }
 
     public void registerListeners() {

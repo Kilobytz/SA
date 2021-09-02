@@ -65,3 +65,6 @@ commands:
   worldtp:
     description: Teleports to a secondary world.
     permission: sa.warp
+  warper:
+    description: Gives a player a warper.
+    permission: sa.general
