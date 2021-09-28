@@ -32,6 +32,7 @@ import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.gui.ItemListener;
 import io.github.kilobytz.sa.gui.ItemNMSRegistry;
 import io.github.kilobytz.sa.gui.WarpEditManager;
+import io.github.kilobytz.sa.items.LegendaryHandler;
 import io.github.kilobytz.sa.misc.CollisionManager;
 import io.github.kilobytz.sa.misc.Grapple;
 import io.github.kilobytz.sa.misc.NoInteracting;
@@ -75,10 +76,10 @@ public class SA extends JavaPlugin {
     WorldLoader wLo = new WorldLoader(this);
     WorldTP wTP = new WorldTP();
     WorldListener wLi = new WorldListener();
+    LegendaryHandler lHandle = new LegendaryHandler(this);
     ItemNMSRegistry itemReg = new ItemNMSRegistry();
     WarpEditManager WeM = new WarpEditManager(this,wH);
     ItemListener itemL = new ItemListener(itemReg,WeM);
-   
 
 
     boolean dbOn = false;
@@ -170,6 +171,8 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
         pluginManager.registerEvents(this.itemL, this);
+        pluginManager.registerEvents(this.wLi, this);
+        pluginManager.registerEvents(this.lHandle, this);
     }
 
     public void classSetups() {
@@ -198,6 +201,10 @@ public class SA extends JavaPlugin {
             ((WarpEditManager)object).openFirstWarperPage(player);
         });
         itemReg.setActionObject("warper",WeM);
+        itemReg.registerItem("timeseal", (player,object) -> {
+            ((LegendaryHandler)object).sealStart(player);
+        });
+        itemReg.setActionObject("timeseal", lHandle);
     }
 
     public void openConnection() throws SQLException, ClassNotFoundException {
