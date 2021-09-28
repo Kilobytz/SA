@@ -5,16 +5,16 @@ import org.bukkit.entity.Player;
 
 import io.github.kilobytz.sa.SA;
 
-public class Builder extends Rank{
-
+public class Avenger extends Rank{
+    
     @Override
     public String getName() {
-        return "Builder";
+        return "Avenger";
     }
 
     @Override
     public ChatColor getColour() {
-        return ChatColor.GREEN;
+        return ChatColor.DARK_PURPLE;
     }
 
     @Override
@@ -22,7 +22,9 @@ public class Builder extends Rank{
         setName(player);
         player.addAttachment(main,"minecraft.command.gamemode",true);
         player.addAttachment(main,"minecraft.command.teleport",true);
-        player.addAttachment(main,"sa.warp",true);
+        player.addAttachment(main,"minecraft.command.enchant",true);
+        player.addAttachment(main,"minecraft.command.give",true);
+        player.addAttachment(main,"minecraft.command.xp",true);
     }
-
+    
 }

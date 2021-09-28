@@ -13,9 +13,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team;
 
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
@@ -32,7 +29,7 @@ import io.github.kilobytz.sa.command.Warp;
 import io.github.kilobytz.sa.command.Warper;
 import io.github.kilobytz.sa.command.WorldTP;
 import io.github.kilobytz.sa.entities.EntityManager;
-import io.github.kilobytz.sa.gui.GUIListener;
+import io.github.kilobytz.sa.gui.ItemListener;
 import io.github.kilobytz.sa.gui.ItemNMSRegistry;
 import io.github.kilobytz.sa.gui.WarpEditManager;
 import io.github.kilobytz.sa.misc.CollisionManager;
@@ -43,13 +40,14 @@ import io.github.kilobytz.sa.misc.WorldListener;
 import io.github.kilobytz.sa.misc.WorldLoader;
 import io.github.kilobytz.sa.players.PlayerListener;
 import io.github.kilobytz.sa.players.PlayerManager;
+import io.github.kilobytz.sa.players.ranks.RankManager;
 import io.github.kilobytz.sa.tips.TipManager;
 import io.github.kilobytz.sa.warping.WarpHandling;
 
 
 public class SA extends JavaPlugin {
 
-    GlobalValues values = new GlobalValues();
+    RankManager rM = new RankManager();
     WarpHandling wH = new WarpHandling(this);
     EntityManager eM = new EntityManager();
     NoInteracting pNH = new NoInteracting();
@@ -61,6 +59,7 @@ public class SA extends JavaPlugin {
     OpenEnderChest eC = new OpenEnderChest();
     Spawn spawn = new Spawn();
     Heal heal = new Heal();
+    Warper warper = new Warper();
     TipManager tM = new TipManager(this);
     Tip tip = new Tip();
     RankCom rank = new RankCom();
@@ -78,8 +77,8 @@ public class SA extends JavaPlugin {
     WorldListener wLi = new WorldListener();
     ItemNMSRegistry itemReg = new ItemNMSRegistry();
     WarpEditManager WeM = new WarpEditManager(this,wH);
-    GUIListener guiL = new GUIListener(itemReg,WeM);
-    Warper warper = new Warper();
+    ItemListener itemL = new ItemListener(itemReg,WeM);
+   
 
 
     boolean dbOn = false;
@@ -134,12 +133,13 @@ public class SA extends JavaPlugin {
         this.getCommand("enderchest").setExecutor(this.eC);
         this.getCommand("spawn").setExecutor(this.spawn);
         this.getCommand("heal").setExecutor(this.heal);
+        this.getCommand("warper").setExecutor(this.warper);
         this.getCommand("tip").setExecutor(this.tip);
         this.getCommand("rank").setExecutor(this.rank);
         this.getCommand("muteall").setExecutor(this.muteall);
         this.getCommand("pvptoggle").setExecutor(this.pvpTog);
         this.getCommand("worldtp").setExecutor(this.wTP);
-        this.getCommand("warper").setExecutor(this.warper);
+        
     }
 
 
@@ -152,13 +152,13 @@ public class SA extends JavaPlugin {
         this.getCommand("suicide").setPermissionMessage(ob);
         this.getCommand("setpersonalspawnpoint").setPermissionMessage(ob);
         this.getCommand("enderchest").setPermissionMessage(ob);
+        this.getCommand("warper").setPermissionMessage(ob);
         this.getCommand("spawn").setPermissionMessage(ob);
         this.getCommand("heal").setPermissionMessage(ob);
         this.getCommand("tip").setPermissionMessage(ob);
         this.getCommand("muteall").setPermissionMessage(ob);
         this.getCommand("pvptoggle").setPermissionMessage(ob);
         this.getCommand("worldtp").setPermissionMessage(ob);
-        this.getCommand("warper").setPermission(ob);
     }
 
     public void registerListeners() {
@@ -169,7 +169,7 @@ public class SA extends JavaPlugin {
         pluginManager.registerEvents(this.pL, this);
         pluginManager.registerEvents(this.pst, this);
         pluginManager.registerEvents(this.grapple, this);
-        pluginManager.registerEvents(this.guiL, this);
+        pluginManager.registerEvents(this.itemL, this);
     }
 
     public void classSetups() {
@@ -184,7 +184,6 @@ public class SA extends JavaPlugin {
         pvpTog.setup(pNH);
         wTP.setup(wLo);
         wLi.setInfo(wH, this);
-        delTeams();
     }
 
     public void setupItemActions(){
@@ -230,16 +229,6 @@ public class SA extends JavaPlugin {
         modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
   
         field.set(null, newValue);
-     }
-
-     public void delTeams(){
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard board = manager.getMainScoreboard();
-        for(Team team : board.getTeams()){
-            if(!values.getAllRanks().contains(team.getName())){
-                team.unregister();
-            }
-        }
      }
 
     public void loginDelay() {

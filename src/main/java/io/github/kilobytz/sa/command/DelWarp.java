@@ -63,9 +63,12 @@ public class DelWarp implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase("delwarp")) {
-            if (args.length == 1) {
+            if (args.length == 1 || args.length == 0) {
                 ArrayList<String> fill = new ArrayList<>();
                 List<String> warps = warpHandling.getAllWarpNames();
+                if(args.length == 1){
+                    
+                }
                     if (!args[0].equals("")) {
                         for (String entry : warps) {
                             String tempEntry = entry;

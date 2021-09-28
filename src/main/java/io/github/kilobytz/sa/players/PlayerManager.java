@@ -3,20 +3,20 @@ package io.github.kilobytz.sa.players;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import io.github.kilobytz.sa.GlobalValues;
 import io.github.kilobytz.sa.SA;
+import io.github.kilobytz.sa.players.ranks.RankManager;
 
 public class PlayerManager {
 
     SA main;
     List<String> ranks = new ArrayList<String>();
     HashMap<String, Boolean> perms = new HashMap<>();
-    private LinkedList<PracPlayer> players = new LinkedList<>();
+    private HashMap<UUID,PracPlayer> players = new HashMap<>();
 
     
     public PlayerManager(SA main) {
@@ -27,15 +27,14 @@ public class PlayerManager {
         //for(String names : perms.keySet()) {
         //    player.addAttachment(main,names,perms.get(names));
         //}
-        player.addAttachment(main, "ei.item.*", true);
     }
 
     public void addPlayer(PracPlayer player) {
-        players.add(player);
+        players.put(player.getID(),player);
     }
 
     public void removePlayer(PracPlayer player) {
-        players.remove(player);
+        players.remove(player.getID());
     }
 
     public boolean setRank(Player player, String rank) {
@@ -59,25 +58,15 @@ public class PlayerManager {
     }
 
     public PracPlayer getPlayerInst(Player player) {
-        for(PracPlayer playerLoop : players) {
-            if(playerLoop.equals(player)) {
-                return playerLoop;
-            }
-        }
-        return null;
+        return players.get(player.getUniqueId());
     }
 
     public boolean rankNameValid(String rank){
         rank = rank.substring(0,1).toUpperCase() + rank.substring(1).toLowerCase();
-        switch(rank) {
-            case GlobalValues.donatorName :
-            case GlobalValues.builderName :
-            case GlobalValues.adminName :
-            case GlobalValues.ownerName :
-                return true;
-            default :
-            return false;
+        if(RankManager.getRank(rank)!= null){
+            return true;
         }
+        return false;
     }
 
     

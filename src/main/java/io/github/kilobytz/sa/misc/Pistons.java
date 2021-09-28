@@ -42,7 +42,7 @@ public class Pistons implements Listener {
             loc1 = getCenter(loc1, direction);
             Location loc2 = loc1.clone();
             loc2 = getSideCenter(loc2, direction);
-            if(e.getLocation().distanceSquared(loc1) <= 0.36 || e.getLocation().distanceSquared(loc2) <= 0.36) {
+            if(e.getLocation().distanceSquared(loc1) <= 0.71 || e.getLocation().distanceSquared(loc2) <= 0.71) {
                 e.setVelocity(getPlayerVec(direction));
                 return true;
             }

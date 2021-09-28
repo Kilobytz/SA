@@ -10,12 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import io.github.kilobytz.sa.SA;
 import io.github.kilobytz.sa.warping.WarpHandling;
 
@@ -49,73 +47,56 @@ public class WarpEditManager {
     public void openFirstWarperPage(Player p){
         warperPages.get(0).open(p);
     }
-
+    @SuppressWarnings("unchecked")
     public void loadEditor(){
         for (int i = 0; i < warpEditorWarps.size(); i+=54) {
             warpEditorPages.put(i/54, new WarpEditor(warpEditorWarps.get(i/54),warpEditorMaterials.get(i/54),warpEditorMatData.get(i/54), this,i/54));
         }
+        if(warpEditorPages.size() <= 1){
+            return;
+        }
         for(int num : warpEditorPages.keySet()){
-            if(warpEditorPages.size() > 1){
-                if(num == 0){
-                    warpEditorPages.get(num).setItem(53, warpEditorPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarpEditor>)object).get(num+1).open(player);
-                    }); //only next
-                    warpEditorPages.get(num).setActionObject(53, warpEditorPages);
-                }
-                if(num < (warpEditorPages.size()-1) && num != 0){
-                    warpEditorPages.get(num).setItem(53, warpEditorPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarpEditor>)object).get(num+1).open(player);
-                    }); //next
-                    warpEditorPages.get(num).setActionObject(53, warpEditorPages);
-                    warpEditorPages.get(num).setItem(45, warpEditorPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarpEditor>)object).get(num-1).open(player);
-                    }); //previous
-                    warpEditorPages.get(num).setActionObject(45, warpEditorPages);
-                }
-                if(num == (warpEditorPages.size()-1)){
-                    warpEditorPages.get(num).setItem(45, warpEditorPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarpEditor>)object).get(num-1).open(player);
-                    }); //only previous
-                    warpEditorPages.get(num).setActionObject(45, warpEditorPages);
-                }
+            if(num != 0){
+                warpEditorPages.get(num).setItem(45, warpEditorPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
+                    ((TreeMap<Integer,WarpEditor>)object).get(num-1).open(player);
+                }); //previous
+                warpEditorPages.get(num).setActionObject(45, warpEditorPages);
+            }
+            if(num != warpEditorPages.size()-1){
+                warpEditorPages.get(num).setItem(53, warpEditorPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
+                    ((TreeMap<Integer,WarpEditor>)object).get(num+1).open(player);
+                }); //next
+                warpEditorPages.get(num).setActionObject(53, warpEditorPages);
             }
         }
     }
-
+    @SuppressWarnings("unchecked")
     public void loadWarper(){
         for (int i = 0; i < warpEditorWarps.size(); i+=54) {
             warperPages.put(i/54, new WarperGUI(warpEditorWarps.get(i/54),warpEditorMaterials.get(i/54),warpEditorMatData.get(i/54), i/54,wH));
         }
+        if(warperPages.size() <= 1){
+            return;
+        }
         for(int num : warperPages.keySet()){
-            if(warperPages.size() > 1){
-                if(num == 0){
-                    warperPages.get(num).setItem(53, warperPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarperGUI>)object).get(num+1).open(player);
-                    }); //only next
-                    warperPages.get(num).setActionObject(53, warperPages);
-                }
-                if(num < (warperPages.size()-1) && num != 0){
-                    warperPages.get(num).setItem(53, warperPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarperGUI>)object).get(num+1).open(player);
-                    }); //next
-                    warperPages.get(num).setActionObject(53, warperPages);
-                    warperPages.get(num).setItem(45, warperPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarperGUI>)object).get(num-1).open(player);
-                    }); //previous
-                    warperPages.get(num).setActionObject(45, warperPages);
-                }
-                if(num == (warperPages.size()-1)){
-                    warperPages.get(num).setItem(45, warperPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
-                        ((TreeMap<Integer,WarperGUI>)object).get(num-1).open(player);
-                    }); //only previous
-                    warperPages.get(num).setActionObject(45, warperPages);
-                }
+            if(num != 0){
+                warperPages.get(num).setActionObject(53, warperPages);
+                warperPages.get(num).setItem(45, warperPages.get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
+                    ((TreeMap<Integer,WarperGUI>)object).get(num-1).open(player);
+                }); //previous
+                warperPages.get(num).setActionObject(45, warperPages);
+            }
+            if(num != warperPages.size()-1){
+                warperPages.get(num).setItem(53, warperPages.get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
+                    ((TreeMap<Integer,WarperGUI>)object).get(num+1).open(player);
+                }); //next
+                warperPages.get(num).setActionObject(53, warperPages);
             }
         }
     }
 
     //todo: make buttons to add and remove warp pages
-
+    @SuppressWarnings("unchecked")
     public void openSelectPage(int slot,int pageNum,Player p){
         TreeMap<Integer,WarpSelectPage> select = new TreeMap<>();
         List<String> warps = wH.getAllWarpNames();
@@ -124,31 +105,21 @@ public class WarpEditManager {
             select.put(select.size(), new WarpSelectPage(warps.subList(i, index), this, slot, pageNum));
         }
         selectPages.put(p.getUniqueId(),select);
+        if(selectPages.get(p.getUniqueId()).size() <= 1){
+            return;
+        }
         for(int num : selectPages.get(p.getUniqueId()).keySet()){
-            if(selectPages.get(p.getUniqueId()).size() > 1){
-                if(num == 0){
-                    selectPages.get(p.getUniqueId()).get(num).setItem(53, selectPages.get(p.getUniqueId()).get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
-                        ((HashMap<UUID,TreeMap<Integer,WarpSelectPage>>)object).get(player.getUniqueId()).get(num+1).open(player);
-                    }); //only next
-                    selectPages.get(p.getUniqueId()).get(num).setActionObject(53, selectPages);
-                }
-                if(num < (selectPages.get(p.getUniqueId()).size()-1) && num != 0){
-                    selectPages.get(p.getUniqueId()).get(num).setItem(53, selectPages.get(p.getUniqueId()).get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
-                        ((HashMap<UUID,TreeMap<Integer,WarpSelectPage>>)object).get(player.getUniqueId()).get(num+1).open(player);
-                    }); //only next
-                    selectPages.get(p.getUniqueId()).get(num).setActionObject(53, selectPages); //next
-                    selectPages.get(p.getUniqueId()).get(num).setActionObject(53, selectPages);
-                    selectPages.get(p.getUniqueId()).get(num).setItem(45, selectPages.get(p.getUniqueId()).get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
-                        ((HashMap<UUID,TreeMap<Integer,WarpSelectPage>>)object).get(player.getUniqueId()).get(num-1).open(player);
-                    }); //previous
-                    selectPages.get(p.getUniqueId()).get(num).setActionObject(45, selectPages);
-                }
-                if(num == (selectPages.get(p.getUniqueId()).size()-1)){
-                    selectPages.get(p.getUniqueId()).get(num).setItem(45, selectPages.get(p.getUniqueId()).get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
-                        ((HashMap<UUID,TreeMap<Integer,WarpSelectPage>>)object).get(player.getUniqueId()).get(num-1).open(player);
-                    }); //only previous
-                    selectPages.get(p.getUniqueId()).get(num).setActionObject(45, selectPages);
-                }
+            if(num != 0){
+                selectPages.get(p.getUniqueId()).get(num).setItem(45, selectPages.get(p.getUniqueId()).get(num).makeItem(Material.NETHER_STAR, "Previous", "Click me to go back a page."), (player,object) -> {
+                    ((HashMap<UUID,TreeMap<Integer,WarpSelectPage>>)object).get(player.getUniqueId()).get(num-1).open(player);
+                }); //previous
+                selectPages.get(p.getUniqueId()).get(num).setActionObject(45, selectPages);
+            }
+            if(num != warperPages.size()-1){
+                selectPages.get(p.getUniqueId()).get(num).setItem(53, selectPages.get(p.getUniqueId()).get(num).makeItem(Material.NETHER_STAR, "Next", "Click me to go forward a page."), (player,object) -> {
+                    ((HashMap<UUID,TreeMap<Integer,WarpSelectPage>>)object).get(player.getUniqueId()).get(num+1).open(player);
+                });
+                selectPages.get(p.getUniqueId()).get(num).setActionObject(53, selectPages);
             }
         }
         selectPages.get(p.getUniqueId()).get(0).open(p);

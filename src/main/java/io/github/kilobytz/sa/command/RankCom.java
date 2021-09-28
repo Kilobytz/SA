@@ -2,7 +2,6 @@ package io.github.kilobytz.sa.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,14 +13,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import io.github.kilobytz.sa.GlobalValues;
 import io.github.kilobytz.sa.players.PlayerManager;
+import io.github.kilobytz.sa.players.ranks.RankManager;
 
 public class RankCom implements TabExecutor {
 
     PlayerManager rM;
     HashMap<String,String> rankCommands = new HashMap<>();
-    List<String> ranksList = new LinkedList<String>();
 
 
     public void setRankData(PlayerManager rM) {
@@ -92,10 +90,6 @@ public class RankCom implements TabExecutor {
         return false;
     }
     public void setRankCommands() {
-        ranksList.add(GlobalValues.donatorName);
-        ranksList.add(GlobalValues.builderName);
-        ranksList.add(GlobalValues.adminName);
-        ranksList.add(GlobalValues.ownerName);
         rankCommands.put("add","/rank add <username> <rank>. Sets a user's rank.");
         rankCommands.put("remove","/rank remove <username>. Removes a user's rank.");
     }
@@ -107,7 +101,7 @@ public class RankCom implements TabExecutor {
     }
 
     public boolean checkRankName(String name) {
-        for(String rankName : ranksList) {
+        for(String rankName : RankManager.getAllRanks().keySet()) {
             if(rankName.equalsIgnoreCase(name)) {
                 return true;
             }
@@ -148,13 +142,13 @@ public class RankCom implements TabExecutor {
                 ArrayList<String> ranks = new ArrayList<>();
                 if(args[0].equalsIgnoreCase("add")) {
                     if (!args[2].equals("")) {
-                        for (String entry : ranksList) {
+                        for (String entry : RankManager.getAllRanks().keySet()) {
                             if (entry.toLowerCase().startsWith(args[2].toLowerCase())) {
                                 ranks.add(entry.toLowerCase());
                             }
                         }
                     } else {
-                        for (String entry : ranksList) {
+                        for (String entry : RankManager.getAllRanks().keySet()) {
                             ranks.add(entry.toLowerCase());
                         }
                     }

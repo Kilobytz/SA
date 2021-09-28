@@ -47,7 +47,7 @@ public abstract class Rank {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
             Scoreboard mainBoard = manager.getMainScoreboard();
             mainBoard.getTeam(getName()).removeEntry(player.getDisplayName());
-            mainBoard.getTeam("collision").addEntry(player.getDisplayName());
+            mainBoard.getTeam("Player").addEntry(player.getDisplayName());
             if(player.isOp()) {
                 player.setOp(false);
             }

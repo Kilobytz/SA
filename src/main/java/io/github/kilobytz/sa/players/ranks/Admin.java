@@ -3,19 +3,18 @@ package io.github.kilobytz.sa.players.ranks;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import io.github.kilobytz.sa.GlobalValues;
 import io.github.kilobytz.sa.SA;
 
 public class Admin extends Rank{
 
     @Override
     public String getName() {
-        return GlobalValues.adminName;
+        return "Admin";
     }
 
     @Override
     public ChatColor getColour() {
-        return GlobalValues.adminColor;
+        return ChatColor.RED;
     }
 
     @Override

@@ -1,17 +1,11 @@
 package io.github.kilobytz.sa.players;
 
 import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import io.github.kilobytz.sa.GlobalValues;
 import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.players.ranks.Admin;
-import io.github.kilobytz.sa.players.ranks.Builder;
-import io.github.kilobytz.sa.players.ranks.Donator;
-import io.github.kilobytz.sa.players.ranks.Owner;
 import io.github.kilobytz.sa.players.ranks.Rank;
+import io.github.kilobytz.sa.players.ranks.RankManager;
 
 public class PracPlayer {
     
@@ -36,22 +30,7 @@ public class PracPlayer {
     } 
 
     public void setRank(String rank) {
-        switch(rank) {
-            case GlobalValues.donatorName :
-                this.rank = new Donator();;
-                return;
-            case GlobalValues.builderName :
-                this.rank = new Builder();;
-                return;
-            case GlobalValues.adminName :
-                this.rank = new Admin();
-                return;
-            case GlobalValues.ownerName :
-                this.rank = new Owner();
-                return;
-            default :
-            this.rank = null;
-        }
+        this.rank = RankManager.getRank(rank);
     }
 
     public Rank getRank() {
