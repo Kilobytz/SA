@@ -1,12 +1,11 @@
 package io.github.kilobytz.sa.players.ranks;
-
 import java.util.HashMap;
 
 public class RankManager {
 
     private static HashMap<String,Rank> allRanks = new HashMap<>();
 
-    public RankManager(){
+    static{
         allRanks.put("Avenger", new Avenger());
         allRanks.put("Builder", new Builder());
         allRanks.put("Admin", new Admin());

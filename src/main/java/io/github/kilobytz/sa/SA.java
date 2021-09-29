@@ -41,14 +41,11 @@ import io.github.kilobytz.sa.misc.WorldListener;
 import io.github.kilobytz.sa.misc.WorldLoader;
 import io.github.kilobytz.sa.players.PlayerListener;
 import io.github.kilobytz.sa.players.PlayerManager;
-import io.github.kilobytz.sa.players.ranks.RankManager;
 import io.github.kilobytz.sa.tips.TipManager;
 import io.github.kilobytz.sa.warping.WarpHandling;
 
 
 public class SA extends JavaPlugin {
-
-    RankManager rM = new RankManager();
     WarpHandling wH = new WarpHandling(this);
     EntityManager eM = new EntityManager();
     NoInteracting pNH = new NoInteracting();

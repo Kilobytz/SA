@@ -36,7 +36,7 @@ public class LegendaryHandler implements Listener{
                 sealLocTracking.remove(player.getUniqueId());
                 sealTimeTracking.remove(player.getUniqueId());
             }
-        }, 140L));
+        }, 150L));
     }
 
     @EventHandler
