@@ -31,24 +31,17 @@ public class SetWarp implements TabExecutor {
                     playerSent.sendMessage(String.format("%sError, field is blank.", ChatColor.RED));
                     return true;
                 }
-                if (length >= 1){
-                    String warpLoc = args[0];
-                    if(length > 1){
-                        StringBuilder stringBuilder = new StringBuilder(50);
-                        for(int i = 0; i < length-1; ++i){
-                            stringBuilder.append(args[i]);
-                            stringBuilder.append(" ");
-                        }
-                        stringBuilder.append(args[length-1]);
-                        warpLoc = stringBuilder.toString();
-                    }
-                    if(warpHandling.checkWarp(warpLoc)){
-                        warpHandling.delWarp(warpLoc);
-                    }
-                    warpHandling.setWarp(warpLoc, playerSent.getLocation());
-                    playerSent.sendMessage(String.format("%sWarp " + warpLoc + " set.",ChatColor.GREEN));
-                    return true;                        
+                if (length > 1){
+                    sender.sendMessage("Error. Invalid input.");
+                    return true;
                 }
+                if(warpHandling.checkWarp(args[0])){
+                    warpHandling.delWarp(args[0]);
+                }
+                warpHandling.setWarp(args[0], playerSent.getLocation());
+                playerSent.sendMessage(String.format("%sWarp " + args[0] + " set.",ChatColor.GREEN));
+                return true;                        
+                
             }
             sender.sendMessage("Error. You are not a player.");
             return true;
@@ -60,26 +53,7 @@ public class SetWarp implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase("setwarp")) {
-            if (args.length == 1) {
-                ArrayList<String> fill = new ArrayList<>();
-                List<String> warps = warpHandling.getAllWarpNames();
-                if (sender.isOp()) {
-                    if (!args[0].equals("")) {
-                        for (String entry : warps) {
-                            if (entry.toLowerCase().startsWith(args[0].toLowerCase())) {
-                                fill.add(entry);
-                            }
-                        }
-                    } else {
-                        fill.addAll(warps);
-                    }
-                    return fill;
-                }
-                return fill;
-            }
-            else{
-                return new ArrayList<>();
-            }
+            return new ArrayList<>();
         }
         return null;
     }

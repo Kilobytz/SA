@@ -32,6 +32,7 @@ public class WarpSelectPage extends GUICreator{
                 }
                 else{
                     int e = warpNum;
+                    warps.set(warpNum, warps.get(warpNum).replace("_", " "));
                     setItem(i, makeItem(Material.EYE_OF_ENDER, warps.get(warpNum), "Click to add this warp to the slot"),(player,object) -> {
                         ((WarpEditManager)object).setWarpEditorItem(slot, warpEditPageNum,warps.get(e),mat,player);
                     });

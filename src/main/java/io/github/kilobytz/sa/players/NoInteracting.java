@@ -1,4 +1,4 @@
-package io.github.kilobytz.sa.misc;
+package io.github.kilobytz.sa.players;
 
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -22,7 +22,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.kilobytz.sa.SA;
-import io.github.kilobytz.sa.players.PlayerManager;
 
 public class NoInteracting implements Listener {
 
@@ -113,6 +112,11 @@ public class NoInteracting implements Listener {
     @EventHandler
     public void checkPvP(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow) && !pvp) {
+            if(event.getDamager() instanceof Arrow){
+                if(!(((Arrow)event.getDamager()).getShooter() instanceof Player)){
+                    return;
+                }
+            }
             event.setCancelled(true);
             return;
         }

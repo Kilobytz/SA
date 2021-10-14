@@ -1,5 +1,8 @@
 package io.github.kilobytz.sa.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -7,9 +10,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import io.github.kilobytz.sa.warping.WarpHandling;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Warp implements TabExecutor {
 
@@ -45,24 +45,16 @@ public class Warp implements TabExecutor {
                         return true;
                     }
                 }
-                if (length >= 1){
-                    String warpLoc = args[0];
-                    if(length > 1){
-                        StringBuilder stringBuilder = new StringBuilder(50);
-                        for(int i = 0; i < length-1; ++i){
-                            stringBuilder.append(args[i]);
-                            stringBuilder.append(" ");
-                        }
-                        stringBuilder.append(args[length-1]);
-                        warpLoc = stringBuilder.toString();
-                    }
-                    if(warpHandling.checkWarp(warpLoc)){
-                        warpHandling.warpPlayer(playerSent, warpLoc);
-                        return true;                        
-                    }
-                    playerSent.sendMessage(String.format("%sError. Warp does not exist.",ChatColor.RED));
+                if (length > 1){
+                    sender.sendMessage("Error. Invalid input.");
                     return true;
                 }
+                if(warpHandling.checkWarp(args[0])){
+                    warpHandling.warpPlayer(playerSent, args[0]);
+                    return true;                        
+                }
+                playerSent.sendMessage(String.format("%sError. Warp does not exist.",ChatColor.RED));
+                return true;   
             }
             sender.sendMessage("Error. You are not a player.");
             return true;
@@ -73,26 +65,26 @@ public class Warp implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (command.getName().equalsIgnoreCase("warp")) {
-            if (args.length == 1) {
-                ArrayList<String> fill = new ArrayList<>();
-                List<String> warps = warpHandling.getAllWarpNames();
-                if (sender.isOp()) {
+            ArrayList<String> fill = new ArrayList<>();
+            List<String> warps = warpHandling.getAllWarpNames();
+            if (args.length == 1 || args.length == 0) {
+                if(args.length == 1){
                     if (!args[0].equals("")) {
                         for (String entry : warps) {
-                            if (entry.toLowerCase().startsWith(args[0].toLowerCase())) {
-                                fill.add(entry);
+                            String tempEntry = entry;
+                            if (tempEntry.toLowerCase().startsWith(args[0].toLowerCase())) {
+                                fill.add(tempEntry);
                             }
                         }
                     } else {
-                        fill.addAll(warps);
+                        for (String entry : warps) {
+                            fill.add(entry);
+                        }
                     }
                     return fill;
                 }
-                return fill;
             }
-            else{
-                return new ArrayList<>();
-            }
+            return fill;
         }
         return null;
     }

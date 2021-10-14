@@ -4,7 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
-import io.github.kilobytz.sa.misc.NoInteracting;
+import io.github.kilobytz.sa.players.NoInteracting;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -11,6 +11,8 @@ public class PracPlayer {
     
     private final UUID playerID;
     private Rank rank;
+    private String courseName;
+    private int courseID = 0;
 
     public PracPlayer(UUID playerID, String rank) {
         this.playerID = playerID;
@@ -66,5 +68,19 @@ public class PracPlayer {
             return false;
         }
         return true;
+    }
+
+    public void setCourse(String courseName, int courseID){
+        this.courseName = courseName;
+        this.courseID = courseID;
+    }
+
+    public void cancelCourse(){
+        Bukkit.getScheduler().cancelTask(courseID);
+        courseID = 0;
+        courseName = null;
+    }
+    public void stopCourse(){
+            
     }
 }

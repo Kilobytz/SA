@@ -1,14 +1,15 @@
-package io.github.kilobytz.sa.misc;
+package io.github.kilobytz.sa.players;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
-
-import io.github.kilobytz.sa.players.PlayerManager;
 
 public class CollisionManager implements Listener {
 
