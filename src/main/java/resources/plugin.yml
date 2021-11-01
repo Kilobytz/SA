@@ -68,4 +68,10 @@ commands:
   worldtp:
     description: Teleports to a secondary world.
     permission: sa.warp
+  course:
+    description: Commands for timed courses.
+    permission: sa.warp
+  leaderboard:
+    description: Displays the course leaderboards.
+    permission: sa.general
   

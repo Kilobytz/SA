@@ -21,7 +21,7 @@ public class Avenger extends Rank{
     public void setPerms(SA main, Player player) {
         setName(player);
         player.addAttachment(main,"minecraft.command.gamemode",true);
-        player.addAttachment(main,"minecraft.command.teleport",true);
+        player.addAttachment(main,"minecraft.command.tp",true);
         player.addAttachment(main,"minecraft.command.enchant",true);
         player.addAttachment(main,"minecraft.command.give",true);
         player.addAttachment(main,"minecraft.command.xp",true);

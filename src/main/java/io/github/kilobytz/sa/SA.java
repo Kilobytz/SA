@@ -14,8 +14,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import io.github.kilobytz.sa.command.CourseCom;
 import io.github.kilobytz.sa.command.DelWarp;
 import io.github.kilobytz.sa.command.Heal;
+import io.github.kilobytz.sa.command.LeaderboardCom;
 import io.github.kilobytz.sa.command.Muteall;
 import io.github.kilobytz.sa.command.OpenEnderChest;
 import io.github.kilobytz.sa.command.PersonalSpawnpoint;
@@ -32,8 +34,10 @@ import io.github.kilobytz.sa.entities.EntityManager;
 import io.github.kilobytz.sa.gui.ItemListener;
 import io.github.kilobytz.sa.gui.ItemNMSRegistry;
 import io.github.kilobytz.sa.gui.WarpEditManager;
+import io.github.kilobytz.sa.items.Grapple;
 import io.github.kilobytz.sa.items.LegendaryHandler;
-import io.github.kilobytz.sa.misc.Grapple;
+import io.github.kilobytz.sa.misc.CourseHandling;
+import io.github.kilobytz.sa.misc.Leaderboard;
 import io.github.kilobytz.sa.misc.Pistons;
 import io.github.kilobytz.sa.misc.WorldListener;
 import io.github.kilobytz.sa.misc.WorldLoader;
@@ -64,7 +68,7 @@ public class SA extends JavaPlugin {
     Pistons pst = new Pistons();
     PlayerListener pL = new PlayerListener();
     PlayerManager pM = new PlayerManager(this);
-    Grapple grapple = new Grapple(this);
+    Grapple grapple = new Grapple(this,pM);
     CollisionManager cM = new CollisionManager(pM);
     boolean delayLogin = true;
     boolean firstLogin = false;
@@ -77,6 +81,10 @@ public class SA extends JavaPlugin {
     ItemNMSRegistry itemReg = new ItemNMSRegistry();
     WarpEditManager WeM = new WarpEditManager(this,wH);
     ItemListener itemL = new ItemListener(itemReg,WeM);
+    Leaderboard leaderboard = new Leaderboard(this);
+    CourseHandling courseHandling = new CourseHandling(this,pM,leaderboard);
+    LeaderboardCom leaderboardCom = new LeaderboardCom();
+    CourseCom courseCom = new CourseCom();
 
 
     boolean dbOn = false;
@@ -98,8 +106,11 @@ public class SA extends JavaPlugin {
         loginDelay();
         tM.loadTips();
         wH.loadWarps();
+        courseHandling.loadCourses();
         setupItemActions();
         WeM.GUIWarpSetup();
+        courseCom.setup(courseHandling);
+        leaderboardCom.setup(courseHandling);
     }
 
     @Override
@@ -137,7 +148,8 @@ public class SA extends JavaPlugin {
         this.getCommand("muteall").setExecutor(this.muteall);
         this.getCommand("pvptoggle").setExecutor(this.pvpTog);
         this.getCommand("worldtp").setExecutor(this.wTP);
-        
+        this.getCommand("course").setExecutor(this.courseCom);
+        this.getCommand("leaderboard").setExecutor(this.leaderboardCom);
     }
 
 
@@ -157,6 +169,8 @@ public class SA extends JavaPlugin {
         this.getCommand("muteall").setPermissionMessage(ob);
         this.getCommand("pvptoggle").setPermissionMessage(ob);
         this.getCommand("worldtp").setPermissionMessage(ob);
+        this.getCommand("course").setPermissionMessage(ob);
+        this.getCommand("leaderboard").setPermissionMessage(ob);
     }
 
     public void registerListeners() {

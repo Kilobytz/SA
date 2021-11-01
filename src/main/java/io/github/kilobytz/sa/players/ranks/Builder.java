@@ -21,8 +21,7 @@ public class Builder extends Rank{
     public void setPerms(SA main, Player player) {
         setName(player);
         player.addAttachment(main,"minecraft.command.gamemode",true);
-        player.addAttachment(main,"minecraft.command.teleport",true);
+        player.addAttachment(main,"minecraft.command.tp",true);
         player.addAttachment(main,"sa.warp",true);
-    }
-
+    }   
 }

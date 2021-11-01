@@ -73,10 +73,11 @@ public class PlayerManager {
 
     public void savePlayers(java.sql.Statement statement,Player player) throws SQLException {
         if(getPlayerInst(player).hasRank()){
-            statement.executeUpdate("INSERT INTO players (uuid, rank) VALUES ('"+ getPlayerInst(player).getID() +"', '"+ getPlayerInst(player).getRankName() +"') ON DUPLICATE KEY UPDATE rank = '"+ getPlayerInst(player).getRankName() +"';");
+            statement.executeUpdate("INSERT INTO players (uuid, rank, ign) VALUES ('"+ getPlayerInst(player).getID() +"', '"+ getPlayerInst(player).getRankName() +"','"+ player.getDisplayName()
+            +"') ON DUPLICATE KEY UPDATE rank = '"+ getPlayerInst(player).getRankName() +"', ign = '"+ player.getDisplayName() +"';");
         }
         else{
-            statement.executeUpdate("INSERT INTO players (uuid, rank) VALUES ('"+ getPlayerInst(player).getID() +"', NULL) ON DUPLICATE KEY UPDATE rank = NULL;");
+            statement.executeUpdate("INSERT INTO players (uuid, rank, ign) VALUES ('"+ getPlayerInst(player).getID() +"', NULL, '"+ player.getDisplayName() +"') ON DUPLICATE KEY UPDATE rank = NULL, ign = '"+ player.getDisplayName() +"';");
         }
         statement.close();
     }

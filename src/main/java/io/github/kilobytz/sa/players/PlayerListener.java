@@ -3,6 +3,8 @@ package io.github.kilobytz.sa.players;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -11,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -84,7 +87,7 @@ public class PlayerListener implements Listener {
     if(pM.getPlayerInst(event.getPlayer()).hasRank()) {
       pM.getPlayerInst(event.getPlayer()).getRank().setPerms(main, event.getPlayer());
     }
-    if((pM.getPlayerInst(event.getPlayer()).getRank() instanceof Admin || pM.getPlayerInst(event.getPlayer()).getRank() instanceof Owner)|| !main.isDbOn()) {
+    if((pM.getPlayerInst(event.getPlayer()).getRank() != null)|| !main.isDbOn()) {
       return;
     }
     event.getPlayer().setOp(false);
@@ -110,6 +113,38 @@ public class PlayerListener implements Listener {
     if(event.getReason().equals("disconnect.spam")){
       event.setCancelled(true);
     }
+  }
+
+  @EventHandler
+  public void playerGamemodeSwitch(PlayerGameModeChangeEvent event) {
+    PracPlayer play = pM.getPlayerInst(event.getPlayer());
+    if(play.isPlayerInCourse()){
+      play.cancelCourse();
+      Bukkit.getPlayer(play.getID()).sendMessage("You cannot change gamemodes while in a timed course!");
+    }
+  }
+
+  @EventHandler
+  public void playerJoining(PlayerJoinEvent event){
+    try {    
+      main.openConnection();
+      Statement statement = SA.connection.createStatement();
+      ResultSet rs1 = statement.executeQuery("SELECT EXISTS(SELECT ign FROM playerlogging WHERE ign =  '"+event.getPlayer().getDisplayName()+"' AND date = '"+java.sql.Date.valueOf(LocalDate.now())+"');");
+      if(rs1.next()) {
+        if(rs1.getInt(1) == 1) {
+          return;
+        }
+        else{
+          statement.executeUpdate("INSERT INTO playerlogging (ign,date) VALUES ( '"+event.getPlayer().getDisplayName()+"','"+java.sql.Date.valueOf(LocalDate.now())+"');");
+        }
+      }
+      statement.close();
+  } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+  } catch (SQLException e) {
+      e.printStackTrace();
+  } catch (NumberFormatException e) {
+  }
   }
 
   /*@EventHandler

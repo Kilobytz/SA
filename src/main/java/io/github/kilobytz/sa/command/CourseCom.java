@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.BlockCommandSender;
@@ -21,7 +22,8 @@ public class CourseCom implements TabExecutor {
     CourseHandling cH;
     Map<String,String> courseCommands = new HashMap<>();
 
-    public void setup(CourseHandling cH) {this.cH = cH;}
+    public void setup(CourseHandling cH) {this.cH = cH;
+    populateCourseCommands();}
 
     @Override
     public boolean onCommand(CommandSender sender,
@@ -37,8 +39,8 @@ public class CourseCom implements TabExecutor {
             args[0] = args[0].toLowerCase();
             switch(args[0]){
                 case "start" :
-                    if(args.length != 3 || Bukkit.getOnlinePlayers().size() == 0 || cH.courseExists(args[1])){
-                        sender.sendMessage("Input error. /course start [course] [player]");
+                    if(args.length != 3 || Bukkit.getOnlinePlayers().size() == 0 || !cH.courseExists(args[1])){
+                        sender.sendMessage(ChatColor.RED + "Input error, not enough args or course doesn't exist");
                         return true;
                     }
                     Player p1 = null;
@@ -56,8 +58,12 @@ public class CourseCom implements TabExecutor {
                     cH.startCourse(args[1], p1);
                     return true;
                 case "end" :
+                    if(args.length != 2 || Bukkit.getOnlinePlayers().size() == 0){
+                        sender.sendMessage(ChatColor.RED + "Input error. /course end [player]");
+                        return true;
+                    }
                     Player p2 = null;
-                    if(args[2].equals("@p")){
+                    if(args[1].equals("@p")){
                         if(sender instanceof BlockCommandSender){
                             p2 = getNearestPlayer(((BlockCommandSender)sender).getBlock().getLocation());
                         }
@@ -66,24 +72,23 @@ public class CourseCom implements TabExecutor {
                         }
                     }
                     else{
-                        p2 = Bukkit.getPlayer(args[2]);
+                        p2 = Bukkit.getPlayer(args[1]);
                     }
                     if(!cH.isPlayerInCourse(p2)){
-                        sender.sendMessage("Error player is not in a course.");
+                        sender.sendMessage(ChatColor.RED + "Error player is not in a course.");
                         return true;
                     }
                     cH.endCourse(p2);
                     return true;
                 case "checkpoint" :
-                    if(args.length != 4 || Bukkit.getOnlinePlayers().size() == 0 || cH.courseExists(args[1])){
-                        sender.sendMessage("Input error. /course checkpoint [course] [checkpoint num] [player]");
+                    if(args.length != 4 || Bukkit.getOnlinePlayers().size() == 0 || !cH.courseExists(args[1])){
+                        sender.sendMessage(ChatColor.RED + "Input error. /course checkpoint [course] [checkpoint num] [player]");
                         return true;
                     }
-                    if(Integer.parseInt(args[2]) > cH.getCheckpoints(args[1])){
-                        sender.sendMessage("Input error. /course checkpoint [course] [checkpoint num] [player]");
+                    if(cH.checkCpNum(args[2],args[1])){
                         return true;
                     }
-                    Player p3 = null;
+                     Player p3 = null;
                     if(args[3].equals("@p")){
                         if(sender instanceof BlockCommandSender){
                             p3 = getNearestPlayer(((BlockCommandSender)sender).getBlock().getLocation());
@@ -93,22 +98,36 @@ public class CourseCom implements TabExecutor {
                         }
                     }
                     else{
-                        p3 = Bukkit.getPlayer(args[2]);
+                        p3 = Bukkit.getPlayer(args[3]);
                     }
-                    cH.setCheckpoint(args[1],Integer.parseInt(args[2]),p3);
+                    cH.setCheckpoint(Integer.parseInt(args[2]),p3);
                     return  true;
                 case "create" :
                     int cpNum = 0;
                     try {
-                        if(args.length != 2){
-                            sender.sendMessage("Input error. /course create [course name] [number of checkpoints]");
+                        if(args.length != 3){
+                            sender.sendMessage(ChatColor.RED + "Input error. /course create [course name] [number of checkpoints]");
+                            return true;
                         }
                         cpNum = Integer.parseInt(args[2]);
                     } catch (NumberFormatException nfe) {
-                        sender.sendMessage("Input error. /course create [course name] [number of checkpoints]");
+                        sender.sendMessage(ChatColor.RED + "Input error. /course create [course name] [number of checkpoints]");
                         return true;
                     }
                     cH.createCourse(args[1], cpNum);
+                    sender.sendMessage("Course " + args[1]+ " has been set with "+ cpNum + " checkpoints.");
+                    return true;
+                case "delete" :
+                    if(args.length != 2){
+                        sender.sendMessage(ChatColor.RED + "Input error. /course create [course name] [number of checkpoints]");
+                        return true;
+                    }
+                    if(!cH.courseExists(args[1])){
+                        sender.sendMessage(ChatColor.RED + "Error. Course does not exist.");
+                        return true;
+                    }
+                    cH.removeCourse(args[1]);
+                    sender.sendMessage("Course " + args[1]+ " has been deleted.");
                     return true;
                 default :
                 printCourseCommands(sender);
@@ -123,6 +142,7 @@ public class CourseCom implements TabExecutor {
         courseCommands.put("end", "/course end [player] : Ends a course timer for the specified player.");
         courseCommands.put("checkpoint", "/course checkpoint [course] [checkpoint num] [player] : Sets the checkpoint for a course, checkpoint number and player.");
         courseCommands.put("create", "/course create [course name] [number of checkpoints] : Creates a course under the specified name. If you want no checkpoints, specify 0.");
+        courseCommands.put("delete", "/course delete [course name] : Deletes a course under the specified name.");
         //courseCommands.put("leaderboard", "/course leaderboard [course] : Displays the leaderboard and your ranking for the specified course.");
     }
 

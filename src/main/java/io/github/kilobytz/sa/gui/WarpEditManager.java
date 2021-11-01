@@ -148,6 +148,7 @@ public class WarpEditManager {
     }
 
     public void setWarpEditorItem(int slot, int pageNum, String warp,Material mat,Player p){
+        warp = warp.replace(" ", "_");
         ItemStack item = new ItemStack(mat);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(warp);

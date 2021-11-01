@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 
+import io.github.kilobytz.sa.players.PracPlayer;
+
 public class EntityManager implements Listener{
 
     @EventHandler
@@ -31,4 +33,6 @@ public class EntityManager implements Listener{
         }
         event.setCancelled(true);
     }
+    
+
 }

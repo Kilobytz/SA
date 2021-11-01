@@ -95,20 +95,7 @@ public class NoInteracting implements Listener {
             }
         }
     }
-    @EventHandler
-    public void onChestClose(InventoryCloseEvent event) {
-        if(event.getInventory().getType().equals(InventoryType.CHEST)) {
-            for(ItemStack i : event.getInventory().getContents()) {
-                if(i != null) {
-                    return;
-                }
-            }
-            if(((Block)event.getInventory().getLocation().getBlock()).getType().equals(Material.TRAPPED_CHEST)) {
-                ((Block)event.getInventory().getLocation().getBlock()).setType(Material.AIR);
-            }
-        }
-    }
-
+    
     @EventHandler
     public void checkPvP(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow) && !pvp) {

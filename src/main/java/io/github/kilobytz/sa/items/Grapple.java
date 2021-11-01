@@ -1,7 +1,8 @@
-package io.github.kilobytz.sa.misc;
+package io.github.kilobytz.sa.items;
 
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,13 +19,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import io.github.kilobytz.sa.SA;
+import io.github.kilobytz.sa.players.PlayerManager;
+import io.github.kilobytz.sa.players.PracPlayer;
 
 public class Grapple implements Listener {
     
     SA main;
-
-    public Grapple(SA main) {
+    PlayerManager pM;
+    public Grapple(SA main, PlayerManager pM) {
         this.main = main;
+        this.pM = pM;
     }
     
     @EventHandler
@@ -35,6 +39,11 @@ public class Grapple implements Listener {
         if (item.getType().equals(Material.FISHING_ROD) && nmsItem.hasTag()) {
             if(nmsItem.getTag().hasKey("grapple")) {
                 item.setDurability(item.getDurability());
+                PracPlayer play = pM.getPlayerInst(event.getPlayer());
+                if(play.isPlayerInCourse()){
+                    Bukkit.getPlayer(play.getID()).sendMessage("You cannot grapple while in a timed course!");
+                    return;
+                }
                 Location locHook = event.getHook().getLocation();
                 Location locBlockHook = locHook.clone();
                 locBlockHook.setY(Math.floor(locBlockHook.getY()));
